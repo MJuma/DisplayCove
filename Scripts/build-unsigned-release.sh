@@ -3,8 +3,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DERIVED_DATA="${TMPDIR:-/tmp}/DisplayCove-Unsigned-Release-DerivedData"
-KEYCHAIN="${DISPLAYCOVE_SIGNING_KEYCHAIN:?Set DISPLAYCOVE_SIGNING_KEYCHAIN}"
-IDENTITY="${DISPLAYCOVE_SIGNING_IDENTITY:?Set DISPLAYCOVE_SIGNING_IDENTITY}"
+KEYCHAIN="${DISPLAYCOVE_SIGNING_KEYCHAIN:-}"
+IDENTITY="${DISPLAYCOVE_SIGNING_IDENTITY:--}"
 TAG="${DISPLAYCOVE_RELEASE_TAG:-v1.0.0}"
 APP="$DERIVED_DATA/Build/Products/Release/DisplayCove.app"
 ENTITLEMENTS="$DERIVED_DATA/DisplayCove-Unsigned.entitlements"
@@ -14,6 +14,15 @@ DIST="$ROOT/dist/$TAG"
 cd "$ROOT"
 rm -rf "$DERIVED_DATA" "$DIST"
 mkdir -p "$DIST"
+
+SIGNING_ARGUMENTS=(
+  --force
+  --sign "$IDENTITY"
+  --options runtime
+)
+if [[ -n "$KEYCHAIN" ]]; then
+  SIGNING_ARGUMENTS+=(--keychain "$KEYCHAIN")
+fi
 
 xcodebuild -quiet \
   -project DisplayCove.xcodeproj \
@@ -25,12 +34,7 @@ xcodebuild -quiet \
 
 while IFS= read -r -d '' file; do
   if file "$file" | grep -q "Mach-O"; then
-    codesign \
-      --force \
-      --sign "$IDENTITY" \
-      --keychain "$KEYCHAIN" \
-      --options runtime \
-      "$file"
+    codesign "${SIGNING_ARGUMENTS[@]}" "$file"
   fi
 done < <(find "$APP" -type f -perm -111 -print0)
 
@@ -44,10 +48,7 @@ cp DisplayCove/DisplayCove.entitlements "$ENTITLEMENTS"
   "$ENTITLEMENTS"
 
 codesign \
-  --force \
-  --sign "$IDENTITY" \
-  --keychain "$KEYCHAIN" \
-  --options runtime \
+  "${SIGNING_ARGUMENTS[@]}" \
   --entitlements "$ENTITLEMENTS" \
   "$APP"
 codesign --verify --deep --strict "$APP"
@@ -69,7 +70,7 @@ ln -s /Applications "$STAGING/Applications"
 cat > "$STAGING/INSTALLING-UNSIGNED.txt" <<'EOF'
 DisplayCove Unsigned Release
 
-This build is self-signed and is not notarized by Apple. macOS blocks its first
+This build is ad-hoc signed and is not notarized by Apple. macOS blocks its first
 launch by default.
 
 1. Drag DisplayCove to Applications.

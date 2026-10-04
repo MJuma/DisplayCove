@@ -47,7 +47,7 @@ Mac.
 
 ### GitHub Releases
 
-The current GitHub binary is self-signed and not notarized. Download the [latest DisplayCove release](https://github.com/MJuma/DisplayCove/releases/latest) and
+The current GitHub binary is ad-hoc signed and not notarized. Download the [latest DisplayCove release](https://github.com/MJuma/DisplayCove/releases/latest) and
 move DisplayCove to Applications.
 
 Because the release is not notarized, macOS blocks its first launch:
