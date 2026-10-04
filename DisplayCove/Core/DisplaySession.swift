@@ -133,16 +133,7 @@ final class DisplaySession {
     }
 
     var availableResolutions: [DisplayResolution] {
-        guard
-            let display,
-            let displayModes = displayModes(for: display.displayID)
-        else {
-            return configuration.modes.map {
-                DisplayResolution(width: $0.width, height: $0.height)
-            }
-        }
-
-        return Array(Set(displayModes.map {
+        Array(Set(configuration.modes.map {
             DisplayResolution(width: $0.width, height: $0.height)
         })).sorted {
             if $0.width == $1.width {
@@ -169,11 +160,6 @@ final class DisplaySession {
         do {
             let newConfiguration = try await waitForScreenConfiguration(
                 matching: resolution
-            )
-            try backend.restoreAvailableModes(
-                preferredResolution: resolution,
-                configuration: configuration,
-                on: display
             )
             applyScreenConfiguration(newConfiguration)
             try await captureController.update(
@@ -211,19 +197,6 @@ final class DisplaySession {
                 "Could not update cursor capture: \(error.localizedDescription, privacy: .public)"
             )
         }
-    }
-
-    private func displayModes(
-        for displayID: CGDirectDisplayID
-    ) -> [CGDisplayMode]? {
-        let options = [
-            kCGDisplayShowDuplicateLowResolutionModes as String: true,
-        ] as CFDictionary
-
-        return CGDisplayCopyAllDisplayModes(
-            displayID,
-            options
-        ) as? [CGDisplayMode]
     }
 
     private func startScreenObservation() {

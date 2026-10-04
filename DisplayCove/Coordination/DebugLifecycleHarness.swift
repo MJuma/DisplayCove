@@ -43,6 +43,13 @@
                             DisplayResolution(width: 1280, height: 720) &&
                             secondDisplay.viewController.displayScaleFactor == 2
                     }
+                    try await Task.sleep(for: .seconds(1))
+                    guard
+                        secondDisplay.viewController.currentResolution ==
+                        DisplayResolution(width: 1280, height: 720)
+                    else {
+                        throw HarnessError.resolutionDidNotPersist
+                    }
 
                     secondDisplay.window.performClose(nil)
                     try await waitUntil {
@@ -109,6 +116,7 @@
         case missingDisplayID
         case secondDisplayCreationFailed
         case firstDisplayUnexpectedlyRemoved
+        case resolutionDidNotPersist
 
         var errorDescription: String? {
             switch self {
@@ -120,6 +128,8 @@
                 "The second virtual display could not be created."
             case .firstDisplayUnexpectedlyRemoved:
                 "Closing the second display removed the first display."
+            case .resolutionDidNotPersist:
+                "The selected resolution reverted after it was applied."
             }
         }
     }
