@@ -23,6 +23,10 @@ and the `displaycove` Homebrew cask.
 Never store certificates, private keys, notary credentials, or Sparkle private
 keys in the repository.
 
+The DisplayCove Sparkle key uses the Keychain account
+`dev.juma.DisplayCove`; the matching public key is embedded in the app's
+Info.plist.
+
 ## Release validation
 
 Before creating a tag:

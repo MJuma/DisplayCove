@@ -47,16 +47,17 @@
                         settings: settings
                     )
                     try await Task.sleep(for: .seconds(max(0.1, duration)))
-                    let outputURL =
+                    guard let outputURL =
                         try await displayWindow.viewController.stopRecording()
+                    else {
+                        throw DebugRecordingHarnessError.missingOutput
+                    }
                     AppLog.recording.info(
-                        "Debug recording completed: \((outputURL?.path ?? outputPath), privacy: .public)"
+                        "Debug recording completed: \(outputURL.path, privacy: .public)"
                     )
-                    if let outputURL {
-                        try await logMetadata(at: outputURL)
-                        if environment["DISPLAYCOVE_RECORDING_TEST_KEEP_OUTPUT"] != "1" {
-                            try FileManager.default.removeItem(at: outputURL)
-                        }
+                    try await logMetadata(at: outputURL)
+                    if environment["DISPLAYCOVE_RECORDING_TEST_KEEP_OUTPUT"] != "1" {
+                        try FileManager.default.removeItem(at: outputURL)
                     }
                     await displayWindow.viewController.stop()
                     print("DISPLAYCOVE_RECORDING_INTEGRATION_SUCCESS")
@@ -99,6 +100,14 @@
             AppLog.recording.info(
                 "Debug recording metadata: \(metadata, privacy: .public)"
             )
+        }
+    }
+
+    private enum DebugRecordingHarnessError: LocalizedError {
+        case missingOutput
+
+        var errorDescription: String? {
+            "Recording stopped without producing an output file."
         }
     }
 #endif

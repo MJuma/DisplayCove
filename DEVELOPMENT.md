@@ -85,6 +85,9 @@ DISPLAYCOVE_SIGNING_IDENTITY="Certificate Common Name" \
 Scripts/build-review-app.sh
 ```
 
+Set `DISPLAYCOVE_CONFIGURATION=Debug` when the signed build must include the
+integration harnesses.
+
 The migration machine currently uses a temporary local identity, but its
 keychain path and certificate name are intentionally not committed. Replace it
 with permanent Apple Development and Developer ID certificates before release.

@@ -5,7 +5,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DERIVED_DATA="${TMPDIR:-/tmp}/DisplayCove-Review-DerivedData"
 KEYCHAIN="${DISPLAYCOVE_KEYCHAIN:?Set DISPLAYCOVE_KEYCHAIN to the signing keychain path}"
 IDENTITY="${DISPLAYCOVE_SIGNING_IDENTITY:?Set DISPLAYCOVE_SIGNING_IDENTITY to the certificate name}"
-APP="$DERIVED_DATA/Build/Products/Release/DisplayCove.app"
+CONFIGURATION="${DISPLAYCOVE_CONFIGURATION:-Release}"
+APP="$DERIVED_DATA/Build/Products/$CONFIGURATION/DisplayCove.app"
 DESTINATION="$HOME/Applications/DisplayCove.app"
 REVIEW_ENTITLEMENTS="$DERIVED_DATA/DisplayCove-Review.entitlements"
 
@@ -13,7 +14,7 @@ cd "$ROOT"
 xcodebuild -quiet \
   -project DisplayCove.xcodeproj \
   -scheme DisplayCove \
-  -configuration Release \
+  -configuration "$CONFIGURATION" \
   -derivedDataPath "$DERIVED_DATA" \
   CODE_SIGNING_ALLOWED=NO \
   PRODUCT_BUNDLE_IDENTIFIER=dev.juma.DisplayCove \
@@ -31,6 +32,10 @@ while IFS= read -r -d '' file; do
 done < <(find "$APP" -type f -perm -111 -print0)
 
 cp DisplayCove/DisplayCove.entitlements "$REVIEW_ENTITLEMENTS"
+/usr/libexec/PlistBuddy \
+  -c "Set :com.apple.security.temporary-exception.mach-lookup.global-name:1 dev.juma.DisplayCove-spks" \
+  -c "Set :com.apple.security.temporary-exception.mach-lookup.global-name:2 dev.juma.DisplayCove-spki" \
+  "$REVIEW_ENTITLEMENTS"
 /usr/libexec/PlistBuddy \
   -c "Add :com.apple.security.cs.disable-library-validation bool true" \
   "$REVIEW_ENTITLEMENTS"
