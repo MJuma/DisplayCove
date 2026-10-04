@@ -35,7 +35,7 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/MJuma/DisplayCove/master/appcast.xml</string>
+	<string>https://github.com/MJuma/DisplayCove/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>lEyJSAAO6I2/p1hGNGAPpoka9mDRRWu/AHZS6gt4PJQ=</string>
 </dict>

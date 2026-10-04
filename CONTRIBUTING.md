@@ -1,16 +1,13 @@
 # Contributing to DisplayCove
 
-DisplayCove welcomes focused bug fixes, compatibility improvements, tests, and
-features that support controlled virtual-display sharing.
+DisplayCove welcomes focused bug fixes, compatibility improvements, tests, and features that support controlled virtual-display sharing.
 
 ## Before opening a pull request
 
 1. Search existing issues.
-2. Open an issue before beginning a large behavioral, architectural, private
-   API, or user-interface change.
+2. Open an issue before beginning a large behavioral, architectural, private API, or user-interface change.
 3. Keep changes scoped to one problem.
-4. Preserve the existing user experience unless the change intentionally
-   updates it.
+4. Preserve the existing user experience unless the change intentionally updates it.
 
 ## Development expectations
 
@@ -40,8 +37,7 @@ swift run --package-path BuildTools \
   --swiftversion 6
 ```
 
-Run the integration scripts when changing display creation, resolution
-switching, teardown, ScreenCaptureKit preview, or recording.
+Run the integration scripts when changing display creation, resolution switching, teardown, ScreenCaptureKit preview, or recording.
 
 ## Pull requests
 
@@ -49,8 +45,6 @@ switching, teardown, ScreenCaptureKit preview, or recording.
 - Explain the user-visible behavior and why the chosen implementation is safe.
 - Include screenshots or recordings for visible UI changes.
 - Call out any private API assumptions and the macOS build used for testing.
-- Do not include signing certificates, provisioning profiles, credentials, or
-  local keychains.
+- Do not include signing certificates, provisioning profiles, credentials, or local keychains.
 
-By contributing, you agree that your contribution is licensed under the
-project's MIT License.
+By contributing, you agree that your contribution is licensed under the project's MIT License.

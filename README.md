@@ -7,20 +7,19 @@
 <p align="center"><strong>A dedicated desktop for every share.</strong></p>
 
 <p align="center">
-  <a href="https://github.com/MJuma/DisplayCove/actions/workflows/tests.yml"><img src="https://github.com/MJuma/DisplayCove/actions/workflows/tests.yml/badge.svg?branch=master" alt="Build status"></a>
+  <a href="https://github.com/MJuma/DisplayCove/actions/workflows/tests.yml">
+    <img src="https://github.com/MJuma/DisplayCove/actions/workflows/tests.yml/badge.svg?branch=master" alt="Build status">
+  </a>
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-16a085.svg" alt="MIT License"></a>
   <img src="https://img.shields.io/badge/macOS-27%2B-0b4f6c.svg" alt="macOS 27 or later">
   <img src="https://img.shields.io/badge/Swift-6-f05138.svg" alt="Swift 6">
 </p>
 
-DisplayCove creates a separate virtual screen so you can share a controlled
-portion of your workspace at a viewer-friendly resolution.
+DisplayCove creates a separate virtual screen so you can share a controlled portion of your workspace at a viewer-friendly resolution.
 
-If you use an ultrawide or high-resolution display, sharing the entire physical
-screen can make text and controls uncomfortably small for everyone else.
-DisplayCove gives Zoom, Teams, Meet, recording software, and similar apps a
-standard-sized virtual display—such as 1920 × 1080—that behaves like another
-monitor connected to your Mac.
+If you use an ultrawide or high-resolution display, sharing the entire physical screen can make text and controls uncomfortably small for everyone else.
+DisplayCove gives Zoom, Teams, Meet, recording software, and similar apps a standard-sized virtual display that behaves like another monitor connected to your
+Mac.
 
 <p align="center">
   <img src="Marketing/Screenshots/DisplayCove-Primary.png" alt="DisplayCove showing a dedicated virtual desktop">
@@ -38,45 +37,27 @@ monitor connected to your Mac.
 - Preview the virtual display locally using ScreenCaptureKit.
 - Keep separate General and Recording preferences.
 
-<p align="center">
-  <img src="Marketing/DisplayCove-Demo.gif" alt="Changing a DisplayCove virtual display to a viewer-friendly resolution">
-</p>
-
 ## Requirements
 
 - macOS 27 or later.
 - Screen & System Audio Recording permission for the live preview and recording.
 - Microphone permission only when microphone recording is enabled.
 
-DisplayCove has been developed and validated on Apple silicon. Other hardware
-should be treated as unverified until it is tested explicitly.
-
 ## Installation
 
 ### GitHub Releases
 
-The current GitHub binary is an **unsigned preview** intended for testers.
-Download it from the
-[latest DisplayCove release](https://github.com/MJuma/DisplayCove/releases/latest)
-and move DisplayCove to Applications.
+The current GitHub binary is self-signed and not notarized. Download the [latest DisplayCove release](https://github.com/MJuma/DisplayCove/releases/latest) and
+move DisplayCove to Applications.
 
-Because the preview is self-signed and not notarized, macOS blocks its first
-launch:
+Because the release is not notarized, macOS blocks its first launch:
 
 1. Try to open DisplayCove once.
 2. Open **System Settings → Privacy & Security**.
 3. Choose **Open Anyway** for DisplayCove and confirm.
 4. Grant **Screen & System Audio Recording** access when requested.
 
-Only override Gatekeeper for an artifact downloaded from the official
-`MJuma/DisplayCove` release page. A frictionless notarized release requires a
-paid Apple Developer Program membership and is not yet available.
-
-### Homebrew
-
-The official Homebrew cask is deferred until DisplayCove can pass Gatekeeper
-with Developer ID signing and notarization. Homebrew's official cask policy
-does not accept applications that require a Gatekeeper bypass.
+Only override Gatekeeper for an artifact downloaded from the official `MJuma/DisplayCove` release page.
 
 ### Build from source
 
@@ -91,27 +72,22 @@ xcodebuild \
   build
 ```
 
-Local development signing and permission persistence are covered in
-[DEVELOPMENT.md](DEVELOPMENT.md).
+See [DEVELOPMENT.md](DEVELOPMENT.md) for more development instructions.
 
 ## Getting started
 
 1. Launch DisplayCove.
-2. Follow the first-launch instructions to grant Screen & System Audio Recording
-   access.
+2. Follow the first-launch instructions to grant Screen & System Audio Recording access.
 3. Choose the virtual display's resolution from the **Resolution** menu.
 4. Move the windows you want to present onto the new display.
-5. In your meeting or streaming application, share the display named
-   **DisplayCove**.
+5. In your meeting or streaming application, share the display named **DisplayCove**.
 
-DisplayCove creates the virtual screen; your conferencing or streaming
-application performs the actual sharing.
+DisplayCove creates the virtual screen; your meeting, streaming, or recording application performs the actual sharing or capture.
 
 ## Multiple displays
 
-Choose **DisplayCove → New Screen** or press `Command+N` to create another
-independent virtual display. The first display is named **DisplayCove**;
-additional displays are named **DisplayCove 2**, **DisplayCove 3**, and so on.
+Choose **DisplayCove → New Screen** or press `Command+N` to create another independent virtual display. The first display is named **DisplayCove**; additional
+displays are named **DisplayCove 2**, **DisplayCove 3**, and so on.
 
 <p align="center">
   <img src="Marketing/Screenshots/DisplayCove-Multiple-Displays.png" alt="Two DisplayCove virtual displays using different resolutions">
@@ -119,8 +95,7 @@ additional displays are named **DisplayCove 2**, **DisplayCove 3**, and so on.
 
 ## Recording
 
-Use the **Recording** menu to record the active DisplayCove display. Recording
-options include:
+Use the **Recording** menu to record the active DisplayCove display. Recording options include:
 
 - H.264 or HEVC video.
 - Native, 1080p, or 720p output.
@@ -136,20 +111,8 @@ Recordings are written only to the location selected in the save panel.
 
 ## Permissions and privacy
 
-DisplayCove does not include analytics, advertising, or usage telemetry. Screen
-and audio data are processed locally. See [PRIVACY.md](PRIVACY.md) for details
+DisplayCove does not include analytics, advertising, or usage telemetry. Screen and audio data are processed locally. See [PRIVACY.md](PRIVACY.md) for details
 about permissions, saved preferences, recordings, and update checks.
-
-## Private API disclosure
-
-macOS does not provide a public API for creating a virtual display. DisplayCove
-therefore uses private `CGVirtualDisplay` APIs for display creation and private
-CoreDisplay capabilities for optional HDR restoration.
-
-Those calls are isolated behind runtime capability checks. Live preview and
-recording use public ScreenCaptureKit APIs. Private APIs can change without
-notice in a future macOS release, and their use prevents distribution through
-the Mac App Store.
 
 ## Troubleshooting
 
@@ -160,29 +123,23 @@ the Mac App Store.
 3. If it is already enabled, turn it off and on again.
 4. Quit and reopen DisplayCove.
 
-Development builds must use a stable signing identity for macOS to retain this
-permission between rebuilds.
+Development builds must use a stable signing identity for macOS to retain this permission between rebuilds.
 
 ### A virtual display remains after the app closes
 
-Quit DisplayCove normally and allow it to finish cleanup. If macOS still shows a
-stale display, log out or restart the Mac before filing an issue with the
+Quit DisplayCove normally and allow it to finish cleanup. If macOS still shows a stale display, log out or restart the Mac before filing an issue with the
 reproduction steps and OS build.
 
 ### Physical HDR changes when a display is created
 
-Enable **Restore physical display HDR** in General settings. Restoration is
-best-effort because it depends on private CoreDisplay behavior.
+Enable **Restore physical display HDR** in General settings. Restoration is best-effort because it depends on private CoreDisplay behavior.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development expectations and
-[DEVELOPMENT.md](DEVELOPMENT.md) for the architecture and validation commands.
-Release maintainers should also review [RELEASING.md](RELEASING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development expectations and [DEVELOPMENT.md](DEVELOPMENT.md) for the architecture and validation commands.
 
 ## License
 
 DisplayCove is available under the [MIT License](LICENSE.md).
 
-DisplayCove is based on the MIT-licensed
-[DeskPad](https://github.com/Stengo/DeskPad) project by Bastian Andelefski.
+DisplayCove is based on the [DeskPad](https://github.com/Stengo/DeskPad) project.
