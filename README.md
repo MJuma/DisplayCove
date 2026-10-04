@@ -50,14 +50,17 @@ Mac.
 The current GitHub binary is self-signed and not notarized. Download the [latest DisplayCove release](https://github.com/MJuma/DisplayCove/releases/latest) and
 move DisplayCove to Applications.
 
-Because the release is not notarized, macOS blocks its first launch:
+Because the release is not notarized, macOS 27 may offer only **Move to Trash** or **Done** and may not provide a usable **Open Anyway** confirmation. After
+copying DisplayCove to Applications, remove the quarantine attribute for this specific app:
 
-1. Try to open DisplayCove once.
-2. Open **System Settings → Privacy & Security**.
-3. Choose **Open Anyway** for DisplayCove and confirm.
-4. Grant **Screen & System Audio Recording** access when requested.
+```bash
+xattr -dr com.apple.quarantine /Applications/DisplayCove.app
+open /Applications/DisplayCove.app
+```
 
-Only override Gatekeeper for an artifact downloaded from the official `MJuma/DisplayCove` release page.
+Then grant **Screen & System Audio Recording** access when requested.
+
+Removing quarantine bypasses Gatekeeper for that copy of the app. Do this only for an artifact downloaded from the official `MJuma/DisplayCove` release page.
 
 ### Build from source
 

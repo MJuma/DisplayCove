@@ -111,15 +111,20 @@ jobs:
           cat > "$notes" <<EOF
           ## Unsigned release
 
-          DisplayCove $version is self-signed and is not notarized by Apple. macOS blocks the first launch by default.
+          DisplayCove $version is self-signed and is not notarized by Apple. macOS 27 may offer only **Move to Trash** or **Done** rather than a usable
+          **Open Anyway** confirmation.
 
           1. Drag **DisplayCove.app** to Applications.
-          2. Try to open DisplayCove once.
-          3. Open **System Settings → Privacy & Security**.
-          4. Choose **Open Anyway** for DisplayCove and confirm.
-          5. Grant **Screen & System Audio Recording** access when requested.
+          2. Open Terminal and run:
 
-          Only override Gatekeeper for artifacts downloaded from this release page.
+             ```bash
+             xattr -dr com.apple.quarantine /Applications/DisplayCove.app
+             open /Applications/DisplayCove.app
+             ```
+
+          3. Grant **Screen & System Audio Recording** access when requested.
+
+          Removing quarantine bypasses Gatekeeper for that copy. Do this only for artifacts downloaded from this release page.
           EOF
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then

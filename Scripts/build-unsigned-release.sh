@@ -70,14 +70,15 @@ ln -s /Applications "$STAGING/Applications"
 cat > "$STAGING/INSTALLING-UNSIGNED.txt" <<'EOF'
 DisplayCove Unsigned Release
 
-This build is self-signed and is not notarized by Apple. macOS blocks its first
-launch by default.
+This build is self-signed and is not notarized by Apple. macOS 27 may offer
+only Move to Trash or Done instead of a usable Open Anyway confirmation.
 
 1. Drag DisplayCove to Applications.
-2. Try to open DisplayCove once.
-3. Open System Settings > Privacy & Security.
-4. Choose Open Anyway for DisplayCove and confirm.
-5. Grant Screen & System Audio Recording access when requested.
+2. Open Terminal and run:
+   xattr -dr com.apple.quarantine /Applications/DisplayCove.app
+3. Open DisplayCove:
+   open /Applications/DisplayCove.app
+4. Grant Screen & System Audio Recording access when requested.
 
 Install only if you trust the release downloaded from:
 https://github.com/MJuma/DisplayCove/releases
