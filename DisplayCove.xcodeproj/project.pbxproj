@@ -37,6 +37,7 @@
 		EDBAA38C418D8E844E41165B /* DisplayCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DC9E536D013ECA9ED74379 /* DisplayCaptureController.swift */; };
 		EEC87280DBC0639A125EB723 /* DisplaySessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */; };
 		F81EC1037B302AB8DF30897B /* WindowResizeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67EB6059C1E86E6E16D46B72 /* WindowResizeGeometry.swift */; };
+		D15C0FE00200000000000001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = D15C0FE00200000000000003 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D15C0FE00200000000000001 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +239,9 @@
 			dependencies = (
 			);
 			name = DisplayCove;
+			packageProductDependencies = (
+				D15C0FE00200000000000003 /* Sparkle */,
+			);
 			productName = DisplayCove;
 			productReference = 6DC0444E2801877F00281728 /* DisplayCove.app */;
 			productType = "com.apple.product-type.application";
@@ -265,6 +270,9 @@
 				Base,
 			);
 			mainGroup = 6DC044452801877F00281728;
+			packageReferences = (
+				D15C0FE00200000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			productRefGroup = 6DC0444F2801877F00281728 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -526,6 +534,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D15C0FE00200000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D15C0FE00200000000000003 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D15C0FE00200000000000002 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6DC044462801877F00281728 /* Project object */;
 }

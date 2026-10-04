@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss
+    version="2.0"
+    xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"
+>
+    <channel>
+        <title>DisplayCove Updates</title>
+        <link>https://raw.githubusercontent.com/MJuma/DisplayCove/master/appcast.xml</link>
+        <description>Signed stable updates for DisplayCove.</description>
+        <language>en</language>
+    </channel>
+</rss>

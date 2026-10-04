@@ -4,6 +4,7 @@ import Cocoa
 final class ApplicationMenuController: NSObject, NSMenuDelegate {
     var onNewScreen: (() -> Void)?
     var onShowSettings: (() -> Void)?
+    var onCheckForUpdates: (() -> Void)?
     var onStartRecording: (() -> Void)?
     var onStopRecording: (() -> Void)?
     var onChangeResolution: ((DisplayResolution) -> Void)?
@@ -62,6 +63,13 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
         )
         settingsItem.target = self
 
+        let checkForUpdatesItem = NSMenuItem(
+            title: "Check for Updates…",
+            action: #selector(checkForUpdates),
+            keyEquivalent: ""
+        )
+        checkForUpdatesItem.target = self
+
         let quitItem = NSMenuItem(
             title: "Quit DisplayCove",
             action: #selector(NSApp.terminate),
@@ -70,6 +78,7 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
 
         menu.addItem(newScreenItem)
         menu.addItem(.separator())
+        menu.addItem(checkForUpdatesItem)
         menu.addItem(settingsItem)
         menu.addItem(.separator())
         menu.addItem(quitItem)
@@ -140,6 +149,10 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
 
     @objc private func showSettings() {
         onShowSettings?()
+    }
+
+    @objc private func checkForUpdates() {
+        onCheckForUpdates?()
     }
 
     @objc private func startRecording() {

@@ -1,7 +1,13 @@
 import Cocoa
+import Sparkle
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: nil,
+        userDriverDelegate: nil
+    )
     private let generalPreferences = GeneralPreferences.shared
     private let recordingPreferences = RecordingPreferences.shared
     private lazy var displayCoordinator = DisplayWindowCoordinator(
@@ -17,6 +23,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_: Notification) {
         configureCoordinators()
         menuController.install()
+
+        guard presentFirstLaunchOnboardingIfNeeded() else {
+            NSApp.terminate(nil)
+            return
+        }
 
         Task {
             do {
@@ -101,6 +112,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menuController.onShowSettings = { [weak self] in
             self?.showSettings()
         }
+        menuController.onCheckForUpdates = { [weak self] in
+            self?.updaterController.checkForUpdates(nil)
+        }
         menuController.onStartRecording = { [weak self] in
             guard let self else {
                 return
@@ -136,6 +150,39 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         settingsWindowController = controller
         controller.present()
+    }
+
+    private func presentFirstLaunchOnboardingIfNeeded() -> Bool {
+        let environment = ProcessInfo.processInfo.environment
+        let isAutomatedLaunch =
+            environment["DISPLAYCOVE_LIFECYCLE_TEST"] == "1" ||
+            environment["DISPLAYCOVE_RECORDING_TEST_OUTPUT"] != nil
+        let key = "hasCompletedFirstLaunchOnboarding"
+        guard
+            !isAutomatedLaunch,
+            !UserDefaults.standard.bool(forKey: key)
+        else {
+            return true
+        }
+
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = "Welcome to DisplayCove"
+        alert.informativeText =
+            "DisplayCove creates a separate virtual screen at the resolution you choose. " +
+            "Move the windows you want to present onto that screen, then share DisplayCove " +
+            "from your meeting or streaming app.\n\n" +
+            "macOS will next request Screen & System Audio Recording access so DisplayCove " +
+            "can show the virtual screen in its window."
+        alert.addButton(withTitle: "Continue")
+        alert.addButton(withTitle: "Quit")
+
+        guard alert.runModal() == .alertFirstButtonReturn else {
+            return false
+        }
+
+        UserDefaults.standard.set(true, forKey: key)
+        return true
     }
 
     private func presentScreenCapturePermissionAlert(error: Error) {

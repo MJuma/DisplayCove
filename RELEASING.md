@@ -96,7 +96,8 @@ xcrun stapler validate DisplayCove.dmg
 
 1. Create and push the signed `v<version>` tag.
 2. Publish the notarized disk image and checksums in a GitHub Release.
-3. Publish the signed Sparkle appcast entry.
+3. Generate the signed Sparkle entry, update `appcast.xml` on `master`, and
+   confirm the raw GitHub feed before enabling the release.
 4. Update the Homebrew cask URL, version, and SHA-256.
 5. Install from both GitHub and Homebrew on a clean account.
 6. Confirm Screen Recording onboarding and update discovery.

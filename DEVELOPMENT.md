@@ -89,6 +89,11 @@ The migration machine currently uses a temporary local identity, but its
 keychain path and certificate name are intentionally not committed. Replace it
 with permanent Apple Development and Developer ID certificates before release.
 
+Because a self-signed certificate has no Apple Team ID, the review script adds
+`com.apple.security.cs.disable-library-validation` only to its generated local
+review entitlements so the embedded Sparkle framework can load. The checked-in
+production entitlements keep library validation enabled.
+
 ## Permissions
 
 DisplayCove verifies authorization with a real ScreenCaptureKit content query.

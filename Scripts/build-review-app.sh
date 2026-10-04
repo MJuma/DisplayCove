@@ -7,6 +7,7 @@ KEYCHAIN="${DISPLAYCOVE_KEYCHAIN:?Set DISPLAYCOVE_KEYCHAIN to the signing keycha
 IDENTITY="${DISPLAYCOVE_SIGNING_IDENTITY:?Set DISPLAYCOVE_SIGNING_IDENTITY to the certificate name}"
 APP="$DERIVED_DATA/Build/Products/Release/DisplayCove.app"
 DESTINATION="$HOME/Applications/DisplayCove.app"
+REVIEW_ENTITLEMENTS="$DERIVED_DATA/DisplayCove-Review.entitlements"
 
 cd "$ROOT"
 xcodebuild -quiet \
@@ -29,12 +30,17 @@ while IFS= read -r -d '' file; do
   fi
 done < <(find "$APP" -type f -perm -111 -print0)
 
+cp DisplayCove/DisplayCove.entitlements "$REVIEW_ENTITLEMENTS"
+/usr/libexec/PlistBuddy \
+  -c "Add :com.apple.security.cs.disable-library-validation bool true" \
+  "$REVIEW_ENTITLEMENTS"
+
 codesign \
   --force \
   --sign "$IDENTITY" \
   --keychain "$KEYCHAIN" \
   --options runtime \
-  --entitlements DisplayCove/DisplayCove.entitlements \
+  --entitlements "$REVIEW_ENTITLEMENTS" \
   "$APP"
 codesign --verify --deep --strict "$APP"
 
