@@ -15,13 +15,37 @@ jobs:
   release:
     name: Build unsigned release
     runs-on: xcode-27
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v5
 
+      - name: Import self-signed identity
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.DISPLAYCOVE_SIGNING_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DISPLAYCOVE_SIGNING_P12_PASSWORD }}
+        run: |
+          set -euo pipefail
+          certificate_path="$RUNNER_TEMP/DisplayCovePreview.p12"
+          certificate_pem="$RUNNER_TEMP/DisplayCovePreview.pem"
+          keychain_path="$RUNNER_TEMP/DisplayCovePreview.keychain-db"
+          keychain_password="$(openssl rand -hex 24)"
+
+          printf '%s' "$CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
+          security create-keychain -p "$keychain_password" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$keychain_password" "$keychain_path"
+          security import "$certificate_path" -k "$keychain_path" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$keychain_password" "$keychain_path"
+          security find-certificate -c "DisplayCove Preview Signing" -p "$keychain_path" > "$certificate_pem"
+          sudo security add-trusted-cert -d -r trustRoot -p codeSign -k /Library/Keychains/System.keychain "$certificate_pem"
+          security list-keychains -d user -s "$keychain_path" "$HOME/Library/Keychains/login.keychain-db"
+
+          echo "DISPLAYCOVE_SIGNING_KEYCHAIN=$keychain_path" >> "$GITHUB_ENV"
+
       - name: Build signed artifacts
         env:
-          DISPLAYCOVE_SIGNING_IDENTITY: "-"
+          DISPLAYCOVE_SIGNING_IDENTITY: DisplayCove Preview Signing
           DISPLAYCOVE_RELEASE_TAG: ${{ inputs.tag }}
           TMPDIR: ${{ runner.temp }}
         run: Scripts/build-unsigned-release.sh
@@ -87,7 +111,7 @@ jobs:
           cat > "$notes" <<EOF
           ## Unsigned release
 
-          DisplayCove $version is ad-hoc signed and is not notarized by Apple. macOS blocks the first launch by default.
+          DisplayCove $version is self-signed and is not notarized by Apple. macOS blocks the first launch by default.
 
           1. Drag **DisplayCove.app** to Applications.
           2. Try to open DisplayCove once.
@@ -98,11 +122,24 @@ jobs:
           Only override Gatekeeper for artifacts downloaded from this release page.
           EOF
 
-          gh release create "$RELEASE_TAG" \
-            "$dist"/*.dmg \
-            "$dist"/*.zip \
-            "$dist/SHA256SUMS.txt" \
-            "$dist/appcast.xml" \
-            --title "DisplayCove $version" \
-            --notes-file "$notes" \
-            --latest
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" \
+              "$dist"/*.dmg \
+              "$dist"/*.zip \
+              "$dist/SHA256SUMS.txt" \
+              "$dist/appcast.xml" \
+              --clobber
+            gh release edit "$RELEASE_TAG" \
+              --title "DisplayCove $version" \
+              --notes-file "$notes" \
+              --latest
+          else
+            gh release create "$RELEASE_TAG" \
+              "$dist"/*.dmg \
+              "$dist"/*.zip \
+              "$dist/SHA256SUMS.txt" \
+              "$dist/appcast.xml" \
+              --title "DisplayCove $version" \
+              --notes-file "$notes" \
+              --latest
+          fi

@@ -70,7 +70,7 @@ ln -s /Applications "$STAGING/Applications"
 cat > "$STAGING/INSTALLING-UNSIGNED.txt" <<'EOF'
 DisplayCove Unsigned Release
 
-This build is ad-hoc signed and is not notarized by Apple. macOS blocks its first
+This build is self-signed and is not notarized by Apple. macOS blocks its first
 launch by default.
 
 1. Drag DisplayCove to Applications.
