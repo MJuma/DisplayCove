@@ -55,17 +55,28 @@ should be treated as unverified until it is tested explicitly.
 
 ### GitHub Releases
 
-Download the notarized disk image from the
-[latest DisplayCove release](https://github.com/MJuma/DisplayCove/releases/latest),
-move DisplayCove to Applications, and launch it.
+The current GitHub binary is an **unsigned preview** intended for testers.
+Download it from the
+[latest DisplayCove release](https://github.com/MJuma/DisplayCove/releases/latest)
+and move DisplayCove to Applications.
+
+Because the preview is self-signed and not notarized, macOS blocks its first
+launch:
+
+1. Try to open DisplayCove once.
+2. Open **System Settings → Privacy & Security**.
+3. Choose **Open Anyway** for DisplayCove and confirm.
+4. Grant **Screen & System Audio Recording** access when requested.
+
+Only override Gatekeeper for an artifact downloaded from the official
+`MJuma/DisplayCove` release page. A frictionless notarized release requires a
+paid Apple Developer Program membership and is not yet available.
 
 ### Homebrew
 
-After the first public cask is published:
-
-```bash
-brew install --cask displaycove
-```
+The official Homebrew cask is deferred until DisplayCove can pass Gatekeeper
+with Developer ID signing and notarization. Homebrew's official cask policy
+does not accept applications that require a Gatekeeper bypass.
 
 ### Build from source
 

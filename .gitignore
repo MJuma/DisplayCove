@@ -4,5 +4,6 @@
 BuildTools/.build
 BuildTools/.swiftpm
 DerivedData/
+dist/
 *.xcuserstate
 xcuserdata/
