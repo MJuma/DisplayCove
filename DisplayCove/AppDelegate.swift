@@ -33,7 +33,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             do {
                 try await ScreenCaptureAuthorization.verify()
             } catch {
-                presentScreenCapturePermissionAlert(error: error)
+                if error is ScreenCaptureAuthorizationError {
+                    presentScreenCaptureRestartAlert(error: error)
+                } else {
+                    presentScreenCapturePermissionAlert(error: error)
+                }
                 return
             }
 
@@ -45,6 +49,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             firstDisplay: displayWindow,
                             coordinator: displayCoordinator
                         )
+                    } else if
+                        ProcessInfo.processInfo.environment[
+                            "DISPLAYCOVE_PREVIEW_STOP_TEST"
+                        ] == "1"
+                    {
+                        Task {
+                            try? await Task.sleep(for: .seconds(1))
+                            await displayWindow.viewController
+                                .simulateUserStoppedPreview()
+                        }
                     } else {
                         DebugRecordingHarness.startIfRequested(
                             for: displayWindow
@@ -69,7 +83,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         isTerminating = true
 
-        Task {
+        Task { [self] in
             await displayCoordinator.stopAll()
             sender.reply(toApplicationShouldTerminate: true)
         }
@@ -114,6 +128,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         menuController.onCheckForUpdates = { [weak self] in
             self?.updaterController.checkForUpdates(nil)
+        }
+        menuController.onResumePreview = { [weak self] in
+            Task {
+                await self?.displayCoordinator.resumePreview()
+            }
         }
         menuController.onStartRecording = { [weak self] in
             guard let self else {
@@ -205,6 +224,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             )
         }
 
+        NSApp.terminate(nil)
+    }
+
+    private func presentScreenCaptureRestartAlert(error: Error) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Restart DisplayCove"
+        alert.informativeText =
+            error.localizedDescription +
+            "\n\nThe virtual display was not created."
+        alert.addButton(withTitle: "Quit DisplayCove")
+        alert.runModal()
         NSApp.terminate(nil)
     }
 

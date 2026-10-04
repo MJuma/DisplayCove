@@ -7,11 +7,14 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
     var onRecordingFinished: ((URL) -> Void)?
     var onWindowBecameKey: (() -> Void)?
     var onResolutionChanged: (() -> Void)?
+    var onPreviewStateChanged: (() -> Void)?
 
     override func loadView() {
         view = NSView()
         view.wantsLayer = true
         view.addGestureRecognizer(NSClickGestureRecognizer(target: self, action: #selector(didClickOnScreen)))
+
+        configureResumePreviewButton()
 
         recordingIndicator.translatesAutoresizingMaskIntoConstraints = false
         recordingIndicator.isHidden = true
@@ -24,6 +27,11 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
 
     private let session: DisplaySession
     private let recordingIndicator = RecordingIndicatorView()
+    private lazy var resumePreviewButton = NSButton(
+        title: "Resume Preview",
+        target: self,
+        action: #selector(resumePreviewAction)
+    )
     private var isWindowHighlighted = false
     private var previousResolution: CGSize?
     private(set) var hasReceivedPreviewFrame = false
@@ -73,6 +81,10 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
         session.onMousePresenceChanged = { [weak self] isMouseInside in
             self?.updateWindowHighlight(isMouseInside)
         }
+        session.onPreviewStateChanged = { [weak self] state in
+            self?.updatePreviewState(state)
+        }
+        updatePreviewState(session.previewState)
     }
 
     func start() async throws {
@@ -101,8 +113,27 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
         session.screenConfiguration?.scaleFactor
     }
 
+    var previewState: DisplayPreviewState {
+        session.previewState
+    }
+
+    var canResumePreview: Bool {
+        switch previewState {
+        case .failed, .pausedByUser, .permissionRequired:
+            true
+        case .reconnecting:
+            true
+        case .running, .starting, .stopped:
+            false
+        }
+    }
+
     func setResolution(_ resolution: DisplayResolution) async throws {
         try await session.setResolution(resolution)
+    }
+
+    func resumePreview() async {
+        await session.resumePreview()
     }
 
     func applyGeneralSettings(_ settings: GeneralSettings) async {
@@ -142,6 +173,16 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
 
         return try await recordingController.stop()
     }
+
+    #if DEBUG
+        func simulateUserStoppedPreview() async {
+            await session.simulateUserStoppedPreview()
+        }
+
+        func resumePreviewForTesting() async {
+            await session.resumePreviewForTesting()
+        }
+    #endif
 
     func windowWillResize(_ window: NSWindow, to frameSize: NSSize) -> NSSize {
         guard
@@ -212,6 +253,43 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
         }
 
         session.moveCursor(to: onScreenPoint)
+    }
+
+    @objc private func resumePreviewAction() {
+        Task {
+            await session.resumePreview()
+        }
+    }
+
+    private func configureResumePreviewButton() {
+        resumePreviewButton.translatesAutoresizingMaskIntoConstraints = false
+        resumePreviewButton.bezelStyle = .rounded
+        resumePreviewButton.controlSize = .large
+        resumePreviewButton.isHidden = true
+        view.addSubview(resumePreviewButton)
+        NSLayoutConstraint.activate([
+            resumePreviewButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            resumePreviewButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+    }
+
+    private func updatePreviewState(_ state: DisplayPreviewState) {
+        onPreviewStateChanged?()
+
+        switch state {
+        case .running, .stopped:
+            resumePreviewButton.isHidden = true
+        case .starting:
+            resumePreviewButton.isHidden = true
+        case .reconnecting:
+            resumePreviewButton.title = "Reconnecting Preview…"
+            resumePreviewButton.isEnabled = false
+            resumePreviewButton.isHidden = false
+        case .failed, .pausedByUser, .permissionRequired:
+            resumePreviewButton.title = "Resume Preview"
+            resumePreviewButton.isEnabled = true
+            resumePreviewButton.isHidden = false
+        }
     }
 
     private func updateScreenConfiguration(_ configuration: ScreenConfigurationSnapshot) {

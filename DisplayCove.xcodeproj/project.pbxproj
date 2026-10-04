@@ -14,6 +14,7 @@
 		38CEB8CFAB4551FA96D823B8 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF771F70CAD402EEB437BC8 /* AppLog.swift */; };
 		3BD4217EECC3249657AD000F /* VirtualDisplayRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 7627D5BECFA6444941CBE60E /* VirtualDisplayRuntime.m */; };
 		3EBC81AF7984BC8FA486291F /* DisplaySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */; };
+		D15C0FE00300000000000001 /* DisplayPreviewRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C0FE00300000000000002 /* DisplayPreviewRecovery.swift */; };
 		566400D3FFAA7EACB2A7D70D /* GeneralSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED3B36B0141A408F43753DC /* GeneralSettings.swift */; };
 		5DF936BA3C321FF45BBA00C8 /* RecordingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508ABCF73FC32523316A03EC /* RecordingPreferences.swift */; };
 		6C177A1FA3B35F5B0ED8FA7A /* DisplayGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8F250037027200000BCE2D /* DisplayGeometry.swift */; };
@@ -66,6 +67,7 @@
 		7C90099F59F3AB442E943547 /* RecordingSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingSettings.swift; sourceTree = "<group>"; };
 		91C99C44C5E5D602A8F08271 /* ScreenCaptureAuthorization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenCaptureAuthorization.swift; sourceTree = "<group>"; };
 		978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplaySession.swift; sourceTree = "<group>"; };
+		D15C0FE00300000000000002 /* DisplayPreviewRecovery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayPreviewRecovery.swift; sourceTree = "<group>"; };
 		9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplaySessionConfiguration.swift; sourceTree = "<group>"; };
 		A15B6B5F0BBBAFEA1F223867 /* VirtualDisplayBackend.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VirtualDisplayBackend.swift; sourceTree = "<group>"; };
 		ADF771F70CAD402EEB437BC8 /* AppLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
@@ -207,6 +209,7 @@
 				E6B5A46AEA4B35A096D4496E /* ScreenConfigurationResolver.swift */,
 				6D68E1B1287ABDB900CD574A /* NSScreen+Extensions.swift */,
 				978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */,
+				D15C0FE00300000000000002 /* DisplayPreviewRecovery.swift */,
 				9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */,
 				67EB6059C1E86E6E16D46B72 /* WindowResizeGeometry.swift */,
 				3C19F88D682B5A21DA78F1BD /* DisplaySerialAllocator.swift */,
@@ -304,6 +307,7 @@
 				6C177A1FA3B35F5B0ED8FA7A /* DisplayGeometry.swift in Sources */,
 				0FBE0671534C58D0A3AD7AA5 /* ScreenConfigurationResolver.swift in Sources */,
 				3EBC81AF7984BC8FA486291F /* DisplaySession.swift in Sources */,
+				D15C0FE00300000000000001 /* DisplayPreviewRecovery.swift in Sources */,
 				EEC87280DBC0639A125EB723 /* DisplaySessionConfiguration.swift in Sources */,
 				F81EC1037B302AB8DF30897B /* WindowResizeGeometry.swift in Sources */,
 				93906570F45871A54E3F6795 /* DisplaySerialAllocator.swift in Sources */,
@@ -462,7 +466,7 @@
 				CODE_SIGN_ENTITLEMENTS = DisplayCove/DisplayCove.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -473,7 +477,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.juma.DisplayCove;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -491,7 +495,7 @@
 				CODE_SIGN_ENTITLEMENTS = DisplayCove/DisplayCove.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -502,7 +506,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.juma.DisplayCove;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -1,5 +1,6 @@
 import Cocoa
 import IOSurface
+import ScreenCaptureKit
 
 enum DisplaySessionError: LocalizedError {
     case displayUnavailable
@@ -26,8 +27,18 @@ final class DisplaySession {
     var onConfigurationChanged: ((ScreenConfigurationSnapshot) -> Void)?
     var onFrameAvailable: ((IOSurface) -> Void)?
     var onMousePresenceChanged: ((Bool) -> Void)?
+    var onPreviewStateChanged: ((DisplayPreviewState) -> Void)?
 
     private(set) var screenConfiguration: ScreenConfigurationSnapshot?
+    private(set) var previewState: DisplayPreviewState = .stopped {
+        didSet {
+            guard previewState != oldValue else {
+                return
+            }
+            onPreviewStateChanged?(previewState)
+        }
+    }
+
     var displayID: CGDirectDisplayID? {
         display?.displayID
     }
@@ -40,7 +51,11 @@ final class DisplaySession {
     private var display: VirtualDisplayHandle?
     private var screenObserver: NSObjectProtocol?
     private var mouseTrackingTask: Task<Void, Never>?
+    private var previewRecoveryTask: Task<Void, Never>?
+    private var previewWatchdogTask: Task<Void, Never>?
+    private var lastPreviewFrameDate: Date?
     private var isMouseInside = false
+    private var isStopping = true
 
     init(
         configuration: DisplaySessionConfiguration = .standard(),
@@ -54,12 +69,22 @@ final class DisplaySession {
         self.backend = backend ?? VirtualDisplayBackend()
 
         captureController.onFrameAvailable = { [weak self] surface in
-            self?.onFrameAvailable?(surface)
+            guard let self else {
+                return
+            }
+            lastPreviewFrameDate = Date()
+            previewState = .running
+            onFrameAvailable?(surface)
         }
-        captureController.onStopped = { error in
+        captureController.onStopped = { [weak self] error in
+            guard let self else {
+                return
+            }
+            let error = error as NSError
             AppLog.display.error(
-                "Preview capture stopped: \(error.localizedDescription, privacy: .public)"
+                "Preview capture stopped [\(error.domain, privacy: .public) \(error.code)]: \(error.localizedDescription, privacy: .public)"
             )
+            handlePreviewStopped(error)
         }
     }
 
@@ -67,6 +92,7 @@ final class DisplaySession {
         guard display == nil else {
             return
         }
+        isStopping = false
 
         let hdrState = preservesPhysicalHDR ? DisplayHDRState.capture() : nil
         let display = try backend.create(configuration: configuration)
@@ -76,21 +102,33 @@ final class DisplaySession {
         startScreenObservation()
         startMouseTracking()
 
+        let screenConfiguration: ScreenConfigurationSnapshot
         do {
-            let screenConfiguration = try await waitForScreenConfiguration()
-            applyScreenConfiguration(screenConfiguration)
-            try await captureController.start(
-                displayID: display.displayID,
-                configuration: screenConfiguration,
-                showsCursor: showsCursor
-            )
+            screenConfiguration = try await waitForScreenConfiguration()
         } catch {
             await stop()
             throw error
         }
+
+        applyScreenConfiguration(screenConfiguration)
+        do {
+            try await startPreviewCapture(
+                configuration: screenConfiguration,
+                state: .starting
+            )
+        } catch {
+            handlePreviewStartFailure(error)
+        }
     }
 
     func stop() async {
+        isStopping = true
+        previewRecoveryTask?.cancel()
+        previewRecoveryTask = nil
+        previewWatchdogTask?.cancel()
+        previewWatchdogTask = nil
+        lastPreviewFrameDate = nil
+
         mouseTrackingTask?.cancel()
         mouseTrackingTask = nil
 
@@ -100,12 +138,50 @@ final class DisplaySession {
         }
 
         await captureController.stop()
+        if let display {
+            try? backend.restoreAvailableModes(
+                preferredResolution: currentResolution ??
+                    configuration.defaultResolution,
+                configuration: configuration,
+                on: display
+            )
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+        previewState = .stopped
         screenConfiguration = nil
         display = nil
 
         if isMouseInside {
             isMouseInside = false
             onMousePresenceChanged?(false)
+        }
+    }
+
+    func resumePreview() async {
+        guard let screenConfiguration, let display else {
+            previewState = .failed(
+                DisplaySessionError.displayUnavailable.localizedDescription
+            )
+            return
+        }
+
+        isStopping = false
+        previewRecoveryTask?.cancel()
+        previewRecoveryTask = nil
+
+        do {
+            previewState = .starting
+            lastPreviewFrameDate = Date()
+            try await captureController.startUsingPicker(
+                displayID: display.displayID,
+                configuration: screenConfiguration,
+                showsCursor: showsCursor
+            )
+            startPreviewWatchdog()
+        } catch is DisplayCapturePickerError {
+            previewState = .pausedByUser
+        } catch {
+            handlePreviewStartFailure(error)
         }
     }
 
@@ -199,6 +275,175 @@ final class DisplaySession {
         }
     }
 
+    #if DEBUG
+        func simulateUserStoppedPreview() async {
+            await captureController.stop()
+            handlePreviewStopped(
+                NSError(
+                    domain: SCStreamErrorDomain,
+                    code: SCStreamError.Code.userStopped.rawValue
+                )
+            )
+        }
+
+        func resumePreviewForTesting() async {
+            guard let screenConfiguration else {
+                return
+            }
+
+            isStopping = false
+            do {
+                try await startPreviewCapture(
+                    configuration: screenConfiguration,
+                    state: .starting
+                )
+            } catch {
+                handlePreviewStartFailure(error)
+            }
+        }
+    #endif
+
+    private func startPreviewCapture(
+        configuration: ScreenConfigurationSnapshot,
+        state: DisplayPreviewState
+    ) async throws {
+        guard let display else {
+            throw DisplaySessionError.displayUnavailable
+        }
+
+        previewState = state
+        lastPreviewFrameDate = Date()
+        try await captureController.start(
+            displayID: display.displayID,
+            configuration: configuration,
+            showsCursor: showsCursor
+        )
+        startPreviewWatchdog()
+    }
+
+    private func handlePreviewStopped(_ error: Error) {
+        guard !isStopping else {
+            return
+        }
+
+        previewWatchdogTask?.cancel()
+        previewWatchdogTask = nil
+        lastPreviewFrameDate = nil
+
+        switch DisplayPreviewRecovery.stopReason(for: error) {
+        case .userStopped:
+            previewRecoveryTask?.cancel()
+            previewRecoveryTask = nil
+            previewState = .pausedByUser
+        case .permissionRequired:
+            previewRecoveryTask?.cancel()
+            previewRecoveryTask = nil
+            previewState = .permissionRequired
+        case .recoverable:
+            scheduleAutomaticPreviewRecovery(after: error)
+        case .failed:
+            previewRecoveryTask?.cancel()
+            previewRecoveryTask = nil
+            previewState = .failed(error.localizedDescription)
+        }
+    }
+
+    private func handlePreviewStartFailure(_ error: Error) {
+        switch DisplayPreviewRecovery.stopReason(for: error) {
+        case .userStopped:
+            previewState = .pausedByUser
+        case .permissionRequired:
+            previewState = .permissionRequired
+        case .recoverable:
+            scheduleAutomaticPreviewRecovery(after: error)
+        case .failed:
+            previewState = .failed(error.localizedDescription)
+        }
+    }
+
+    private func scheduleAutomaticPreviewRecovery(after initialError: Error) {
+        guard previewRecoveryTask == nil else {
+            return
+        }
+
+        previewRecoveryTask = Task { [weak self] in
+            guard let self else {
+                return
+            }
+            defer {
+                previewRecoveryTask = nil
+            }
+
+            var latestError = initialError
+            for attempt in 1 ... DisplayPreviewRecovery.maxAutomaticRetryAttempts {
+                previewState = .reconnecting(attempt: attempt)
+                do {
+                    try await Task.sleep(
+                        for: DisplayPreviewRecovery.retryDelay(for: attempt)
+                    )
+                } catch {
+                    return
+                }
+
+                guard
+                    !Task.isCancelled,
+                    let screenConfiguration,
+                    display != nil
+                else {
+                    return
+                }
+
+                do {
+                    try await startPreviewCapture(
+                        configuration: screenConfiguration,
+                        state: .reconnecting(attempt: attempt)
+                    )
+                    return
+                } catch {
+                    latestError = error
+                    let reason = DisplayPreviewRecovery.stopReason(for: error)
+                    guard reason == .recoverable else {
+                        handlePreviewStartFailure(error)
+                        return
+                    }
+                }
+            }
+
+            previewState = .failed(latestError.localizedDescription)
+        }
+    }
+
+    private func startPreviewWatchdog() {
+        previewWatchdogTask?.cancel()
+        previewWatchdogTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(for: .seconds(2))
+                } catch {
+                    return
+                }
+
+                guard
+                    let self,
+                    previewState.expectsFrames,
+                    let lastPreviewFrameDate,
+                    Date().timeIntervalSince(lastPreviewFrameDate) >= 8
+                else {
+                    continue
+                }
+
+                let error = DisplayPreviewWatchdogError()
+                AppLog.display.error(
+                    "\(error.localizedDescription, privacy: .public)"
+                )
+                await captureController.stop()
+                previewWatchdogTask = nil
+                scheduleAutomaticPreviewRecovery(after: error)
+                return
+            }
+        }
+    }
+
     private func startScreenObservation() {
         guard screenObserver == nil else {
             return
@@ -237,6 +482,12 @@ final class DisplaySession {
             AppLog.display.error(
                 "Could not update preview capture: \(error.localizedDescription, privacy: .public)"
             )
+        }
+    }
+
+    private struct DisplayPreviewWatchdogError: LocalizedError {
+        var errorDescription: String? {
+            "The preview stopped receiving frames."
         }
     }
 

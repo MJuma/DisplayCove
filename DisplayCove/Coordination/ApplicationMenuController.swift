@@ -5,6 +5,7 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
     var onNewScreen: (() -> Void)?
     var onShowSettings: (() -> Void)?
     var onCheckForUpdates: (() -> Void)?
+    var onResumePreview: (() -> Void)?
     var onStartRecording: (() -> Void)?
     var onStopRecording: (() -> Void)?
     var onChangeResolution: ((DisplayResolution) -> Void)?
@@ -22,6 +23,11 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
         action: #selector(stopRecording),
         keyEquivalent: ""
     )
+    private let resumePreviewMenuItem = NSMenuItem(
+        title: "Resume Preview",
+        action: #selector(resumePreview),
+        keyEquivalent: "r"
+    )
 
     func install() {
         let mainMenu = NSMenu()
@@ -33,6 +39,7 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
     }
 
     func update() {
+        updatePreviewMenu()
         updateRecordingMenu()
         updateResolutionMenu()
     }
@@ -55,6 +62,8 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
             keyEquivalent: "n"
         )
         newScreenItem.target = self
+        resumePreviewMenuItem.keyEquivalentModifierMask = [.command, .option]
+        resumePreviewMenuItem.target = self
 
         let settingsItem = NSMenuItem(
             title: "Settings…",
@@ -77,6 +86,7 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
         )
 
         menu.addItem(newScreenItem)
+        menu.addItem(resumePreviewMenuItem)
         menu.addItem(.separator())
         menu.addItem(checkForUpdatesItem)
         menu.addItem(settingsItem)
@@ -112,6 +122,11 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
         startRecordingMenuItem.isEnabled =
             viewController != nil && viewController?.isRecording == false
         stopRecordingMenuItem.isEnabled = viewController?.isRecording == true
+    }
+
+    private func updatePreviewMenu() {
+        resumePreviewMenuItem.isEnabled =
+            activeDisplayProvider?()?.viewController.canResumePreview == true
     }
 
     private func updateResolutionMenu() {
@@ -153,6 +168,10 @@ final class ApplicationMenuController: NSObject, NSMenuDelegate {
 
     @objc private func checkForUpdates() {
         onCheckForUpdates?()
+    }
+
+    @objc private func resumePreview() {
+        onResumePreview?()
     }
 
     @objc private func startRecording() {

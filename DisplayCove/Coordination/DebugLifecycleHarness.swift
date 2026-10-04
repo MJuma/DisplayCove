@@ -51,6 +51,15 @@
                         throw HarnessError.resolutionDidNotPersist
                     }
 
+                    await secondDisplay.viewController.simulateUserStoppedPreview()
+                    try await waitUntil {
+                        secondDisplay.viewController.previewState == .pausedByUser
+                    }
+                    await secondDisplay.viewController.resumePreviewForTesting()
+                    try await waitUntil {
+                        secondDisplay.viewController.previewState == .running
+                    }
+
                     secondDisplay.window.performClose(nil)
                     try await waitUntil {
                         coordinator.allDisplayWindows.count == 1 &&

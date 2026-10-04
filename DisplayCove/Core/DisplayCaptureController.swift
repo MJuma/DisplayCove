@@ -3,6 +3,14 @@ import CoreVideo
 import IOSurface
 import ScreenCaptureKit
 
+enum DisplayCapturePickerError: LocalizedError {
+    case cancelled
+
+    var errorDescription: String? {
+        "Display selection was cancelled."
+    }
+}
+
 @MainActor
 final class DisplayCaptureController: NSObject {
     var onFrameAvailable: ((IOSurface) -> Void)?
@@ -13,6 +21,16 @@ final class DisplayCaptureController: NSObject {
         qos: .userInteractive
     )
     private var stream: SCStream?
+    private var pickerContinuation: CheckedContinuation<Void, Error>?
+
+    override init() {
+        super.init()
+        SCContentSharingPicker.shared.add(self)
+    }
+
+    deinit {
+        SCContentSharingPicker.shared.remove(self)
+    }
 
     func start(
         displayID: CGDirectDisplayID,
@@ -32,14 +50,26 @@ final class DisplayCaptureController: NSObject {
             throw DisplaySessionError.displayUnavailable
         }
 
-        let streamConfiguration = makeStreamConfiguration(
-            configuration: configuration,
-            showsCursor: showsCursor
-        )
         let filter = SCContentFilter(
             display: display,
             excludingApplications: [],
             exceptingWindows: []
+        )
+        try await start(
+            filter: filter,
+            configuration: configuration,
+            showsCursor: showsCursor
+        )
+    }
+
+    private func start(
+        filter: SCContentFilter,
+        configuration: ScreenConfigurationSnapshot,
+        showsCursor: Bool
+    ) async throws {
+        let streamConfiguration = makeStreamConfiguration(
+            configuration: configuration,
+            showsCursor: showsCursor
         )
         let stream = SCStream(
             filter: filter,
@@ -72,13 +102,69 @@ final class DisplayCaptureController: NSObject {
         )
     }
 
+    func startUsingPicker(
+        displayID: CGDirectDisplayID,
+        configuration: ScreenConfigurationSnapshot,
+        showsCursor: Bool
+    ) async throws {
+        await stop()
+        try await authorizeUsingPicker()
+        try await start(
+            displayID: displayID,
+            configuration: configuration,
+            showsCursor: showsCursor
+        )
+    }
+
+    private func authorizeUsingPicker() async throws {
+        guard pickerContinuation == nil else {
+            throw DisplayCapturePickerError.cancelled
+        }
+
+        try await withCheckedThrowingContinuation {
+            (continuation: CheckedContinuation<Void, Error>) in
+            pickerContinuation = continuation
+
+            let picker = SCContentSharingPicker.shared
+            var configuration = SCContentSharingPickerConfiguration()
+            configuration.allowedPickerModes = [.singleDisplay]
+            configuration.allowsChangingSelectedContent = false
+            picker.defaultConfiguration = configuration
+            picker.maximumStreamCount = 1
+            picker.isActive = true
+            picker.present(using: .display)
+        }
+    }
+
     func stop() async {
+        failPicker(with: DisplayCapturePickerError.cancelled)
+
         guard let stream else {
             return
         }
 
         self.stream = nil
         try? await stream.stopCapture()
+    }
+
+    private func finishPicker() {
+        guard let pickerContinuation else {
+            return
+        }
+
+        self.pickerContinuation = nil
+        SCContentSharingPicker.shared.isActive = false
+        pickerContinuation.resume(returning: ())
+    }
+
+    private func failPicker(with error: Error) {
+        guard let pickerContinuation else {
+            return
+        }
+
+        self.pickerContinuation = nil
+        SCContentSharingPicker.shared.isActive = false
+        pickerContinuation.resume(throwing: error)
     }
 
     private func makeStreamConfiguration(
@@ -132,6 +218,36 @@ extension DisplayCaptureController: SCStreamDelegate {
         Task { @MainActor [weak self] in
             self?.stream = nil
             self?.onStopped?(error)
+        }
+    }
+}
+
+extension DisplayCaptureController: SCContentSharingPickerObserver {
+    nonisolated func contentSharingPicker(
+        _: SCContentSharingPicker,
+        didCancelFor _: SCStream?
+    ) {
+        Task { @MainActor [weak self] in
+            self?.failPicker(with: DisplayCapturePickerError.cancelled)
+        }
+    }
+
+    nonisolated func contentSharingPicker(
+        _: SCContentSharingPicker,
+        didUpdateWith _: SCContentFilter,
+        for _: SCStream?
+    ) {
+        Task { @MainActor [weak self] in
+            self?.finishPicker()
+        }
+    }
+
+    nonisolated func contentSharingPickerStartDidFailWithError(
+        _ error: any Error
+    ) {
+        let error = UncheckedSendableValue(error)
+        Task { @MainActor [weak self] in
+            self?.failPicker(with: error.value)
         }
     }
 }

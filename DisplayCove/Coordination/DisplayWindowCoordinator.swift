@@ -71,11 +71,6 @@ final class DisplayWindowCoordinator {
 
         do {
             try await viewController.start()
-            if viewController.currentResolution != settings.defaultResolution {
-                try await viewController.setResolution(
-                    settings.defaultResolution
-                )
-            }
         } catch {
             await viewController.stop()
             serialAllocator.release(serialNumber)
@@ -92,6 +87,20 @@ final class DisplayWindowCoordinator {
         displayWindows[identifier] = displayWindow
         activeDisplayWindowIdentifier = identifier
         window.makeKeyAndOrderFront(nil)
+
+        if viewController.currentResolution != settings.defaultResolution {
+            do {
+                try await Task.sleep(for: .milliseconds(500))
+                try await viewController.setResolution(
+                    settings.defaultResolution
+                )
+            } catch {
+                AppLog.display.error(
+                    "Could not apply the default resolution: \(error.localizedDescription, privacy: .public)"
+                )
+            }
+        }
+
         onStateChanged?()
         return displayWindow
     }
@@ -125,6 +134,15 @@ final class DisplayWindowCoordinator {
         } catch {
             onError?(error, displayWindow.window)
         }
+        onStateChanged?()
+    }
+
+    func resumePreview() async {
+        guard let displayWindow = activeDisplayWindow else {
+            return
+        }
+
+        await displayWindow.viewController.resumePreview()
         onStateChanged?()
     }
 
@@ -177,6 +195,9 @@ final class DisplayWindowCoordinator {
         }
         viewController.onRecordingFinished = { [weak self] url in
             self?.onRecordingFinished?(url)
+            self?.onStateChanged?()
+        }
+        viewController.onPreviewStateChanged = { [weak self] in
             self?.onStateChanged?()
         }
         viewController.onWindowBecameKey = { [weak self] in

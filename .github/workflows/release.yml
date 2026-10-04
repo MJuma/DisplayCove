@@ -6,7 +6,7 @@ on:
       tag:
         description: Release tag matching the app marketing version
         required: true
-        default: v1.0.1
+        default: v1.0.2
 
 permissions:
   contents: write
