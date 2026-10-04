@@ -34,7 +34,8 @@ jobs:
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
-          app_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' DisplayCove/DisplayCove-Info.plist)"
+          app_info="$RUNNER_TEMP/DisplayCove-Unsigned-Release-DerivedData/Build/Products/Release/DisplayCove.app/Contents/Info.plist"
+          app_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_info")"
           if [[ "$version" != "$app_version" ]]; then
             echo "Tag $RELEASE_TAG does not match app version $app_version" >&2
             exit 1
