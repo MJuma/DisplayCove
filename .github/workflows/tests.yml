@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    name: Build, test, and lint
+    runs-on: xcode-27
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        run: swift test
+
+      - name: Build app
+        run: >
+          xcodebuild -quiet
+          -project DisplayCove.xcodeproj
+          -scheme DisplayCove
+          -configuration Debug
+          CODE_SIGNING_ALLOWED=NO
+          build
+
+      - name: Check formatting
+        run: >
+          swift run --package-path BuildTools
+          swiftformat --lint .
+          --swiftversion 6

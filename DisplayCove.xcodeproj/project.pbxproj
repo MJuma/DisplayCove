@@ -1,0 +1,531 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0B9CF7E380681122236302E3 /* GeneralSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F6CFBC95594E81E3B956B6 /* GeneralSettingsViewController.swift */; };
+		0FBE0671534C58D0A3AD7AA5 /* ScreenConfigurationResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5A46AEA4B35A096D4496E /* ScreenConfigurationResolver.swift */; };
+		2A929F4C8ABCC85EA141865D /* VirtualDisplayBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15B6B5F0BBBAFEA1F223867 /* VirtualDisplayBackend.swift */; };
+		331410A26584DD8B4C531DBD /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5B9D3A41FA7CB6612961B6 /* SettingsWindowController.swift */; };
+		38CEB8CFAB4551FA96D823B8 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF771F70CAD402EEB437BC8 /* AppLog.swift */; };
+		3BD4217EECC3249657AD000F /* VirtualDisplayRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 7627D5BECFA6444941CBE60E /* VirtualDisplayRuntime.m */; };
+		3EBC81AF7984BC8FA486291F /* DisplaySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */; };
+		566400D3FFAA7EACB2A7D70D /* GeneralSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED3B36B0141A408F43753DC /* GeneralSettings.swift */; };
+		5DF936BA3C321FF45BBA00C8 /* RecordingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508ABCF73FC32523316A03EC /* RecordingPreferences.swift */; };
+		6C177A1FA3B35F5B0ED8FA7A /* DisplayGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8F250037027200000BCE2D /* DisplayGeometry.swift */; };
+		6D2F148E280C211E00A3A2E5 /* ScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2F148D280C211E00A3A2E5 /* ScreenViewController.swift */; };
+		6D68E1B2287ABDB900CD574A /* NSScreen+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D68E1B1287ABDB900CD574A /* NSScreen+Extensions.swift */; };
+		6DC044522801877F00281728 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DC044512801877F00281728 /* AppDelegate.swift */; };
+		6DC044562801878100281728 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6DC044552801878100281728 /* Assets.xcassets */; };
+		80F846E83D610253CCBC69C3 /* DisplayWindowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4195E7C251D182A4BC7F59E6 /* DisplayWindowCoordinator.swift */; };
+		8E600999E2E4ED5F0A4BDAD4 /* RecordingSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C90099F59F3AB442E943547 /* RecordingSettings.swift */; };
+		937B06185AC2D19C447DAD66 /* DisplayRecordingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C7D383DAACE7DDF4B4E410 /* DisplayRecordingController.swift */; };
+		93906570F45871A54E3F6795 /* DisplaySerialAllocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C19F88D682B5A21DA78F1BD /* DisplaySerialAllocator.swift */; };
+		9AECB70EDC0E10A81C13AC09 /* DisplayHDRState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 621D5E24813996EAEDA36295 /* DisplayHDRState.swift */; };
+		9EA0F5868A5A8DCB55E710BE /* RecordingSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E8DE369CAE20D1A1D741B9 /* RecordingSettingsViewController.swift */; };
+		AFA83CDFD50D57B2D637CF99 /* ApplicationMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D61D072C71935AE9CD95735B /* ApplicationMenuController.swift */; };
+		B835D6C504A8C5533294800F /* DebugRecordingHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA9DAC1352A3AD3018E04BDE /* DebugRecordingHarness.swift */; };
+		BEBEB3BEE905BEFBE2D22056 /* ScreenCaptureAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C99C44C5E5D602A8F08271 /* ScreenCaptureAuthorization.swift */; };
+		C684CAA31B7EB4EE88E26EE0 /* DebugLifecycleHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD3B3CD0E72BDBABBC0DC6 /* DebugLifecycleHarness.swift */; };
+		C6869B6A2B370DC47A15CECA /* RecordingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B32DC3A3A2298F7A56909E0D /* RecordingIndicatorView.swift */; };
+		C6F978E6188D2BA7DFA81402 /* DisplayCoveApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98851D850D7BC029A3467D8 /* DisplayCoveApplication.swift */; };
+		EBFC3C20BDE744F8A1D140B6 /* RecordingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF210040835330C71BD8D0C5 /* RecordingCoordinator.swift */; };
+		EDBAA38C418D8E844E41165B /* DisplayCaptureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DC9E536D013ECA9ED74379 /* DisplayCaptureController.swift */; };
+		EEC87280DBC0639A125EB723 /* DisplaySessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */; };
+		F81EC1037B302AB8DF30897B /* WindowResizeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67EB6059C1E86E6E16D46B72 /* WindowResizeGeometry.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		07E8DE369CAE20D1A1D741B9 /* RecordingSettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingSettingsViewController.swift; sourceTree = "<group>"; };
+		08F6CFBC95594E81E3B956B6 /* GeneralSettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeneralSettingsViewController.swift; sourceTree = "<group>"; };
+		0ED3B36B0141A408F43753DC /* GeneralSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeneralSettings.swift; sourceTree = "<group>"; };
+		17066B899C565601D1B853BB /* VirtualDisplayRuntime.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = VirtualDisplayRuntime.h; sourceTree = "<group>"; };
+		1E5B9D3A41FA7CB6612961B6 /* SettingsWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		1E8F250037027200000BCE2D /* DisplayGeometry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayGeometry.swift; sourceTree = "<group>"; };
+		31C7D383DAACE7DDF4B4E410 /* DisplayRecordingController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayRecordingController.swift; sourceTree = "<group>"; };
+		34CD3B3CD0E72BDBABBC0DC6 /* DebugLifecycleHarness.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DebugLifecycleHarness.swift; sourceTree = "<group>"; };
+		3C19F88D682B5A21DA78F1BD /* DisplaySerialAllocator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplaySerialAllocator.swift; sourceTree = "<group>"; };
+		4195E7C251D182A4BC7F59E6 /* DisplayWindowCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayWindowCoordinator.swift; sourceTree = "<group>"; };
+		508ABCF73FC32523316A03EC /* RecordingPreferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingPreferences.swift; sourceTree = "<group>"; };
+		621D5E24813996EAEDA36295 /* DisplayHDRState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayHDRState.swift; sourceTree = "<group>"; };
+		67EB6059C1E86E6E16D46B72 /* WindowResizeGeometry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WindowResizeGeometry.swift; sourceTree = "<group>"; };
+		6D2F148D280C211E00A3A2E5 /* ScreenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenViewController.swift; sourceTree = "<group>"; };
+		6D68E1B1287ABDB900CD574A /* NSScreen+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScreen+Extensions.swift"; sourceTree = "<group>"; };
+		6DC0444E2801877F00281728 /* DisplayCove.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DisplayCove.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6DC044512801877F00281728 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		6DC044552801878100281728 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6DC0445A2801878100281728 /* DisplayCove.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DisplayCove.entitlements; sourceTree = "<group>"; };
+		D15C0FE00100000000000001 /* DisplayCove-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DisplayCove-Info.plist"; sourceTree = "<group>"; };
+		7627D5BECFA6444941CBE60E /* VirtualDisplayRuntime.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = VirtualDisplayRuntime.m; sourceTree = "<group>"; };
+		7C8186FEC0CBAC3D5B0CD948 /* DisplayCove-Bridging-Header.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DisplayCove-Bridging-Header.h"; sourceTree = "<group>"; };
+		7C90099F59F3AB442E943547 /* RecordingSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingSettings.swift; sourceTree = "<group>"; };
+		91C99C44C5E5D602A8F08271 /* ScreenCaptureAuthorization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenCaptureAuthorization.swift; sourceTree = "<group>"; };
+		978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplaySession.swift; sourceTree = "<group>"; };
+		9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplaySessionConfiguration.swift; sourceTree = "<group>"; };
+		A15B6B5F0BBBAFEA1F223867 /* VirtualDisplayBackend.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VirtualDisplayBackend.swift; sourceTree = "<group>"; };
+		ADF771F70CAD402EEB437BC8 /* AppLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
+		B32DC3A3A2298F7A56909E0D /* RecordingIndicatorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingIndicatorView.swift; sourceTree = "<group>"; };
+		B98851D850D7BC029A3467D8 /* DisplayCoveApplication.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayCoveApplication.swift; sourceTree = "<group>"; };
+		C1DC9E536D013ECA9ED74379 /* DisplayCaptureController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayCaptureController.swift; sourceTree = "<group>"; };
+		CA9DAC1352A3AD3018E04BDE /* DebugRecordingHarness.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DebugRecordingHarness.swift; sourceTree = "<group>"; };
+		D61D072C71935AE9CD95735B /* ApplicationMenuController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplicationMenuController.swift; sourceTree = "<group>"; };
+		DF210040835330C71BD8D0C5 /* RecordingCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingCoordinator.swift; sourceTree = "<group>"; };
+		E6B5A46AEA4B35A096D4496E /* ScreenConfigurationResolver.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenConfigurationResolver.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6DC0444B2801877F00281728 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0D57723506DE274B25B0BC52 /* Coordination */ = {
+			isa = PBXGroup;
+			children = (
+				D61D072C71935AE9CD95735B /* ApplicationMenuController.swift */,
+				CA9DAC1352A3AD3018E04BDE /* DebugRecordingHarness.swift */,
+				4195E7C251D182A4BC7F59E6 /* DisplayWindowCoordinator.swift */,
+				DF210040835330C71BD8D0C5 /* RecordingCoordinator.swift */,
+				34CD3B3CD0E72BDBABBC0DC6 /* DebugLifecycleHarness.swift */,
+			);
+			name = Coordination;
+			path = Coordination;
+			sourceTree = "<group>";
+		};
+		15486379A2F2A5CDBC3E923B /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				08F6CFBC95594E81E3B956B6 /* GeneralSettingsViewController.swift */,
+				07E8DE369CAE20D1A1D741B9 /* RecordingSettingsViewController.swift */,
+				1E5B9D3A41FA7CB6612961B6 /* SettingsWindowController.swift */,
+			);
+			name = Settings;
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		307076A9049DB121AC97169F /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				31C7D383DAACE7DDF4B4E410 /* DisplayRecordingController.swift */,
+				B32DC3A3A2298F7A56909E0D /* RecordingIndicatorView.swift */,
+			);
+			name = Recording;
+			path = Recording;
+			sourceTree = "<group>";
+		};
+		6D2F1483280C201B00A3A2E5 /* Backend */ = {
+			isa = PBXGroup;
+			children = (
+				6D68E1AD287ABB6F00CD574A /* ScreenConfiguration */,
+				6D41B09D2879FA87007CEB2F /* MouseLocation */,
+			);
+			path = Backend;
+			sourceTree = "<group>";
+		};
+		6D2F1484280C202700A3A2E5 /* Frontend */ = {
+			isa = PBXGroup;
+			children = (
+				6D41B0A22879FB88007CEB2F /* Screen */,
+			);
+			path = Frontend;
+			sourceTree = "<group>";
+		};
+		6D41B09D2879FA87007CEB2F /* MouseLocation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = MouseLocation;
+			sourceTree = "<group>";
+		};
+		6D41B0A22879FB88007CEB2F /* Screen */ = {
+			isa = PBXGroup;
+			children = (
+				6D2F148D280C211E00A3A2E5 /* ScreenViewController.swift */,
+			);
+			path = Screen;
+			sourceTree = "<group>";
+		};
+		6D68E1AD287ABB6F00CD574A /* ScreenConfiguration */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ScreenConfiguration;
+			sourceTree = "<group>";
+		};
+		6DC044452801877F00281728 = {
+			isa = PBXGroup;
+			children = (
+				6DC044502801877F00281728 /* DisplayCove */,
+				6DC0444F2801877F00281728 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6DC0444F2801877F00281728 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6DC0444E2801877F00281728 /* DisplayCove.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6DC044502801877F00281728 /* DisplayCove */ = {
+			isa = PBXGroup;
+			children = (
+				6DC044512801877F00281728 /* AppDelegate.swift */,
+				6D2F1483280C201B00A3A2E5 /* Backend */,
+				6D2F1484280C202700A3A2E5 /* Frontend */,
+				6DC044552801878100281728 /* Assets.xcassets */,
+				6DC0445A2801878100281728 /* DisplayCove.entitlements */,
+				D15C0FE00100000000000001 /* DisplayCove-Info.plist */,
+				BDA8F9A141786E661619E886 /* Core */,
+				307076A9049DB121AC97169F /* Recording */,
+				15486379A2F2A5CDBC3E923B /* Settings */,
+				B98851D850D7BC029A3467D8 /* DisplayCoveApplication.swift */,
+				0D57723506DE274B25B0BC52 /* Coordination */,
+				17066B899C565601D1B853BB /* VirtualDisplayRuntime.h */,
+				7627D5BECFA6444941CBE60E /* VirtualDisplayRuntime.m */,
+				7C8186FEC0CBAC3D5B0CD948 /* DisplayCove-Bridging-Header.h */,
+			);
+			path = DisplayCove;
+			sourceTree = "<group>";
+		};
+		BDA8F9A141786E661619E886 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				1E8F250037027200000BCE2D /* DisplayGeometry.swift */,
+				E6B5A46AEA4B35A096D4496E /* ScreenConfigurationResolver.swift */,
+				6D68E1B1287ABDB900CD574A /* NSScreen+Extensions.swift */,
+				978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */,
+				9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */,
+				67EB6059C1E86E6E16D46B72 /* WindowResizeGeometry.swift */,
+				3C19F88D682B5A21DA78F1BD /* DisplaySerialAllocator.swift */,
+				7C90099F59F3AB442E943547 /* RecordingSettings.swift */,
+				508ABCF73FC32523316A03EC /* RecordingPreferences.swift */,
+				621D5E24813996EAEDA36295 /* DisplayHDRState.swift */,
+				0ED3B36B0141A408F43753DC /* GeneralSettings.swift */,
+				C1DC9E536D013ECA9ED74379 /* DisplayCaptureController.swift */,
+				A15B6B5F0BBBAFEA1F223867 /* VirtualDisplayBackend.swift */,
+				ADF771F70CAD402EEB437BC8 /* AppLog.swift */,
+				91C99C44C5E5D602A8F08271 /* ScreenCaptureAuthorization.swift */,
+			);
+			name = Core;
+			path = Core;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6DC0444D2801877F00281728 /* DisplayCove */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6DC0445D2801878100281728 /* Build configuration list for PBXNativeTarget "DisplayCove" */;
+			buildPhases = (
+				6DC0444A2801877F00281728 /* Sources */,
+				6DC0444B2801877F00281728 /* Frameworks */,
+				6DC0444C2801877F00281728 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DisplayCove;
+			productName = DisplayCove;
+			productReference = 6DC0444E2801877F00281728 /* DisplayCove.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6DC044462801877F00281728 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1320;
+				LastUpgradeCheck = 1320;
+				TargetAttributes = {
+					6DC0444D2801877F00281728 = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 6DC044492801877F00281728 /* Build configuration list for PBXProject "DisplayCove" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6DC044452801877F00281728;
+			productRefGroup = 6DC0444F2801877F00281728 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6DC0444D2801877F00281728 /* DisplayCove */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6DC0444C2801877F00281728 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DC044562801878100281728 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6DC0444A2801877F00281728 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D68E1B2287ABDB900CD574A /* NSScreen+Extensions.swift in Sources */,
+				6D2F148E280C211E00A3A2E5 /* ScreenViewController.swift in Sources */,
+				6DC044522801877F00281728 /* AppDelegate.swift in Sources */,
+				6C177A1FA3B35F5B0ED8FA7A /* DisplayGeometry.swift in Sources */,
+				0FBE0671534C58D0A3AD7AA5 /* ScreenConfigurationResolver.swift in Sources */,
+				3EBC81AF7984BC8FA486291F /* DisplaySession.swift in Sources */,
+				EEC87280DBC0639A125EB723 /* DisplaySessionConfiguration.swift in Sources */,
+				F81EC1037B302AB8DF30897B /* WindowResizeGeometry.swift in Sources */,
+				93906570F45871A54E3F6795 /* DisplaySerialAllocator.swift in Sources */,
+				8E600999E2E4ED5F0A4BDAD4 /* RecordingSettings.swift in Sources */,
+				5DF936BA3C321FF45BBA00C8 /* RecordingPreferences.swift in Sources */,
+				937B06185AC2D19C447DAD66 /* DisplayRecordingController.swift in Sources */,
+				C6869B6A2B370DC47A15CECA /* RecordingIndicatorView.swift in Sources */,
+				9AECB70EDC0E10A81C13AC09 /* DisplayHDRState.swift in Sources */,
+				566400D3FFAA7EACB2A7D70D /* GeneralSettings.swift in Sources */,
+				0B9CF7E380681122236302E3 /* GeneralSettingsViewController.swift in Sources */,
+				9EA0F5868A5A8DCB55E710BE /* RecordingSettingsViewController.swift in Sources */,
+				331410A26584DD8B4C531DBD /* SettingsWindowController.swift in Sources */,
+				EDBAA38C418D8E844E41165B /* DisplayCaptureController.swift in Sources */,
+				2A929F4C8ABCC85EA141865D /* VirtualDisplayBackend.swift in Sources */,
+				C6F978E6188D2BA7DFA81402 /* DisplayCoveApplication.swift in Sources */,
+				AFA83CDFD50D57B2D637CF99 /* ApplicationMenuController.swift in Sources */,
+				B835D6C504A8C5533294800F /* DebugRecordingHarness.swift in Sources */,
+				80F846E83D610253CCBC69C3 /* DisplayWindowCoordinator.swift in Sources */,
+				EBFC3C20BDE744F8A1D140B6 /* RecordingCoordinator.swift in Sources */,
+				38CEB8CFAB4551FA96D823B8 /* AppLog.swift in Sources */,
+				C684CAA31B7EB4EE88E26EE0 /* DebugLifecycleHarness.swift in Sources */,
+				3BD4217EECC3249657AD000F /* VirtualDisplayRuntime.m in Sources */,
+				BEBEB3BEE905BEFBE2D22056 /* ScreenCaptureAuthorization.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		6DC0445B2801878100281728 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "DisplayCove/DisplayCove-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		6DC0445C2801878100281728 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "DisplayCove/DisplayCove-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		6DC0445E2801878100281728 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DisplayCove/DisplayCove.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "DisplayCove/DisplayCove-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.juma.DisplayCove;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "DisplayCove/DisplayCove-Bridging-Header.h";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		6DC0445F2801878100281728 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DisplayCove/DisplayCove.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "DisplayCove/DisplayCove-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.juma.DisplayCove;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "DisplayCove/DisplayCove-Bridging-Header.h";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6DC044492801877F00281728 /* Build configuration list for PBXProject "DisplayCove" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DC0445B2801878100281728 /* Debug */,
+				6DC0445C2801878100281728 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6DC0445D2801878100281728 /* Build configuration list for PBXNativeTarget "DisplayCove" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DC0445E2801878100281728 /* Debug */,
+				6DC0445F2801878100281728 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6DC044462801877F00281728 /* Project object */;
+}
