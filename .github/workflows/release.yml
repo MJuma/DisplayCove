@@ -108,10 +108,10 @@ jobs:
           dist="$GITHUB_WORKSPACE/dist/$RELEASE_TAG"
           version="${RELEASE_TAG#v}"
           notes="$RUNNER_TEMP/release-notes.md"
-          cat > "$notes" <<EOF
+          cat > "$notes" <<'EOF'
           ## Unsigned release
 
-          DisplayCove $version is self-signed and is not notarized by Apple. macOS 27 may offer only **Move to Trash** or **Done** rather than a usable
+          This DisplayCove release is self-signed and is not notarized by Apple. macOS 27 may offer only **Move to Trash** or **Done** rather than a usable
           **Open Anyway** confirmation.
 
           1. Drag **DisplayCove.app** to Applications.
