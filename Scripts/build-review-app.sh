@@ -11,6 +11,7 @@ DESTINATION="$HOME/Applications/DisplayCove.app"
 REVIEW_ENTITLEMENTS="$DERIVED_DATA/DisplayCove-Review.entitlements"
 
 cd "$ROOT"
+rm -rf "$DERIVED_DATA"
 xcodebuild -quiet \
   -project DisplayCove.xcodeproj \
   -scheme DisplayCove \

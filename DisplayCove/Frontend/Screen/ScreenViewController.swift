@@ -27,6 +27,7 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
 
     private let session: DisplaySession
     private let recordingIndicator = RecordingIndicatorView()
+    private let resumePreviewPanel = NSVisualEffectView()
     private lazy var resumePreviewButton = NSButton(
         title: "Resume Preview",
         target: self,
@@ -262,14 +263,54 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
     }
 
     private func configureResumePreviewButton() {
+        resumePreviewPanel.translatesAutoresizingMaskIntoConstraints = false
+        resumePreviewPanel.blendingMode = .withinWindow
+        resumePreviewPanel.material = .hudWindow
+        resumePreviewPanel.state = .active
+        resumePreviewPanel.wantsLayer = true
+        resumePreviewPanel.layer?.cornerRadius = 16
+        resumePreviewPanel.layer?.borderWidth = 2
+        resumePreviewPanel.layer?.borderColor =
+            (NSColor(named: "AccentColor") ?? .controlAccentColor)
+                .withAlphaComponent(0.9)
+                .cgColor
+        resumePreviewPanel.layer?.shadowColor = NSColor.black.cgColor
+        resumePreviewPanel.layer?.shadowOpacity = 0.55
+        resumePreviewPanel.layer?.shadowRadius = 18
+        resumePreviewPanel.layer?.shadowOffset = CGSize(width: 0, height: -6)
+        resumePreviewPanel.isHidden = true
+
         resumePreviewButton.translatesAutoresizingMaskIntoConstraints = false
         resumePreviewButton.bezelStyle = .rounded
+        resumePreviewButton.bezelColor =
+            NSColor(named: "AccentColor") ?? .controlAccentColor
+        resumePreviewButton.contentTintColor = .white
         resumePreviewButton.controlSize = .large
-        resumePreviewButton.isHidden = true
-        view.addSubview(resumePreviewButton)
+        resumePreviewButton.font = .systemFont(ofSize: 17, weight: .semibold)
+        resumePreviewButton.setAccessibilityLabel("Resume DisplayCove Preview")
+
+        resumePreviewPanel.addSubview(resumePreviewButton)
+        view.addSubview(resumePreviewPanel)
         NSLayoutConstraint.activate([
-            resumePreviewButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            resumePreviewButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            resumePreviewPanel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            resumePreviewPanel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            resumePreviewPanel.widthAnchor.constraint(greaterThanOrEqualToConstant: 250),
+            resumePreviewButton.leadingAnchor.constraint(
+                equalTo: resumePreviewPanel.leadingAnchor,
+                constant: 24
+            ),
+            resumePreviewButton.trailingAnchor.constraint(
+                equalTo: resumePreviewPanel.trailingAnchor,
+                constant: -24
+            ),
+            resumePreviewButton.topAnchor.constraint(
+                equalTo: resumePreviewPanel.topAnchor,
+                constant: 16
+            ),
+            resumePreviewButton.bottomAnchor.constraint(
+                equalTo: resumePreviewPanel.bottomAnchor,
+                constant: -16
+            ),
         ])
     }
 
@@ -278,17 +319,17 @@ class ScreenViewController: NSViewController, NSWindowDelegate {
 
         switch state {
         case .running, .stopped:
-            resumePreviewButton.isHidden = true
+            resumePreviewPanel.isHidden = true
         case .starting:
-            resumePreviewButton.isHidden = true
+            resumePreviewPanel.isHidden = true
         case .reconnecting:
             resumePreviewButton.title = "Reconnecting Preview…"
             resumePreviewButton.isEnabled = false
-            resumePreviewButton.isHidden = false
+            resumePreviewPanel.isHidden = false
         case .failed, .pausedByUser, .permissionRequired:
             resumePreviewButton.title = "Resume Preview"
             resumePreviewButton.isEnabled = true
-            resumePreviewButton.isHidden = false
+            resumePreviewPanel.isHidden = false
         }
     }
 

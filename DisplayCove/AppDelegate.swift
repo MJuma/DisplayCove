@@ -3,7 +3,7 @@ import Sparkle
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private let updaterController = SPUStandardUpdaterController(
+    private lazy var updaterController = SPUStandardUpdaterController(
         startingUpdater: true,
         updaterDelegate: nil,
         userDriverDelegate: nil
@@ -21,6 +21,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var isTerminating = false
 
     func applicationDidFinishLaunching(_: Notification) {
+        if terminateIfDuplicateInstance() {
+            return
+        }
+
         configureCoordinators()
         menuController.install()
 
@@ -123,6 +127,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 #endif
             }
         }
+
         menuController.onShowSettings = { [weak self] in
             self?.showSettings()
         }
@@ -155,6 +160,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 await self?.displayCoordinator.setResolution(resolution)
             }
         }
+    }
+
+    private func terminateIfDuplicateInstance() -> Bool {
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
+            return false
+        }
+
+        let currentProcessID = ProcessInfo.processInfo.processIdentifier
+        let matchingApplications =
+            NSRunningApplication.runningApplications(
+                withBundleIdentifier: bundleIdentifier
+            )
+        let matchingProcessIDs = matchingApplications.map(
+            \.processIdentifier
+        )
+        guard ApplicationInstancePolicy.shouldTerminate(
+            currentProcessID: currentProcessID,
+            matchingProcessIDs: matchingProcessIDs
+        ) else {
+            return false
+        }
+
+        matchingApplications
+            .filter { $0.processIdentifier != currentProcessID }
+            .min { $0.processIdentifier < $1.processIdentifier }?
+            .activate(options: [.activateAllWindows])
+        NSApp.terminate(nil)
+        return true
     }
 
     private func showSettings() {
