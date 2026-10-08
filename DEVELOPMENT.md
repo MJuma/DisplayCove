@@ -94,6 +94,15 @@ for rebuilt development applications.
 
 Changing the bundle identifier, certificate, or designated requirement can cause macOS to request permission again even when the application name is unchanged.
 
+Switching between ad-hoc, local review, and published builds with the same bundle identifier can leave an enabled TCC entry tied to the wrong code requirement.
+Reset only DisplayCove's Screen Capture record before granting the current build:
+
+```bash
+tccutil reset ScreenCapture dev.juma.DisplayCove
+```
+
+Published releases use the same signing certificate and designated requirement. A clean grant to a published build survives Sparkle updates between releases.
+
 ## Private API boundary
 
 Private classes and selectors must remain isolated in `VirtualDisplayRuntime.h/.m`. Swift code should call only the project-owned C functions exposed through

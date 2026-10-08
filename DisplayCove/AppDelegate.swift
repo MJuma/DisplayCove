@@ -242,19 +242,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         alert.alertStyle = .warning
         alert.messageText = "Screen Recording Permission Required"
         alert.informativeText =
-            "DisplayCove cannot show the virtual display until Screen Recording permission " +
-            "is enabled. Grant access in Privacy & Security, then quit and reopen DisplayCove.\n\n" +
+            "macOS denied Screen Recording access to this copy of DisplayCove. " +
+            "If DisplayCove is already enabled in Privacy & Security, macOS may have saved " +
+            "permission for an older or differently signed copy. Copy the reset command, " +
+            "run it in Terminal, then reopen DisplayCove and grant access again.\n\n" +
             error.localizedDescription
         alert.addButton(withTitle: "Open System Settings")
-        alert.addButton(withTitle: "Quit")
+        alert.addButton(withTitle: "Copy Reset Command")
+        alert.addButton(withTitle: "Quit DisplayCove")
 
-        if alert.runModal() == .alertFirstButtonReturn {
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
             NSWorkspace.shared.open(
                 URL(
                     string: "x-apple.systempreferences:" +
                         "com.apple.preference.security?Privacy_ScreenCapture"
                 )!
             )
+        } else if response == .alertSecondButtonReturn {
+            let command =
+                "tccutil reset ScreenCapture dev.juma.DisplayCove"
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(command, forType: .string)
+
+            let confirmation = NSAlert()
+            confirmation.alertStyle = .informational
+            confirmation.messageText = "Reset Command Copied"
+            confirmation.informativeText =
+                "Quit DisplayCove, paste the command into Terminal, then reopen " +
+                "DisplayCove and grant Screen Recording access."
+            confirmation.addButton(withTitle: "Quit DisplayCove")
+            confirmation.runModal()
         }
 
         NSApp.terminate(nil)
