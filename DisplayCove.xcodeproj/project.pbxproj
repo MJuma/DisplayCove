@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D15C0FE00500000000000001 /* PreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C0FE00500000000000002 /* PreferencesStorage.swift */; };
 		0B9CF7E380681122236302E3 /* GeneralSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08F6CFBC95594E81E3B956B6 /* GeneralSettingsViewController.swift */; };
 		0FBE0671534C58D0A3AD7AA5 /* ScreenConfigurationResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6B5A46AEA4B35A096D4496E /* ScreenConfigurationResolver.swift */; };
 		2A929F4C8ABCC85EA141865D /* VirtualDisplayBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15B6B5F0BBBAFEA1F223867 /* VirtualDisplayBackend.swift */; };
@@ -15,7 +16,7 @@
 		3BD4217EECC3249657AD000F /* VirtualDisplayRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = 7627D5BECFA6444941CBE60E /* VirtualDisplayRuntime.m */; };
 		3EBC81AF7984BC8FA486291F /* DisplaySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */; };
 		D15C0FE00300000000000001 /* DisplayPreviewRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C0FE00300000000000002 /* DisplayPreviewRecovery.swift */; };
-		D15C0FE00400000000000001 /* ApplicationInstancePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C0FE00400000000000002 /* ApplicationInstancePolicy.swift */; };
+		D15C0FE00400000000000001 /* ApplicationInstanceLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15C0FE00400000000000002 /* ApplicationInstanceLock.swift */; };
 		566400D3FFAA7EACB2A7D70D /* GeneralSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED3B36B0141A408F43753DC /* GeneralSettings.swift */; };
 		5DF936BA3C321FF45BBA00C8 /* RecordingPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508ABCF73FC32523316A03EC /* RecordingPreferences.swift */; };
 		6C177A1FA3B35F5B0ED8FA7A /* DisplayGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8F250037027200000BCE2D /* DisplayGeometry.swift */; };
@@ -43,6 +44,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D15C0FE00500000000000002 /* PreferencesStorage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PreferencesStorage.swift; sourceTree = "<group>"; };
 		07E8DE369CAE20D1A1D741B9 /* RecordingSettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingSettingsViewController.swift; sourceTree = "<group>"; };
 		08F6CFBC95594E81E3B956B6 /* GeneralSettingsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeneralSettingsViewController.swift; sourceTree = "<group>"; };
 		0ED3B36B0141A408F43753DC /* GeneralSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeneralSettings.swift; sourceTree = "<group>"; };
@@ -69,7 +71,7 @@
 		91C99C44C5E5D602A8F08271 /* ScreenCaptureAuthorization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenCaptureAuthorization.swift; sourceTree = "<group>"; };
 		978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplaySession.swift; sourceTree = "<group>"; };
 		D15C0FE00300000000000002 /* DisplayPreviewRecovery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayPreviewRecovery.swift; sourceTree = "<group>"; };
-		D15C0FE00400000000000002 /* ApplicationInstancePolicy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplicationInstancePolicy.swift; sourceTree = "<group>"; };
+		D15C0FE00400000000000002 /* ApplicationInstanceLock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApplicationInstanceLock.swift; sourceTree = "<group>"; };
 		9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplaySessionConfiguration.swift; sourceTree = "<group>"; };
 		A15B6B5F0BBBAFEA1F223867 /* VirtualDisplayBackend.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VirtualDisplayBackend.swift; sourceTree = "<group>"; };
 		ADF771F70CAD402EEB437BC8 /* AppLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
@@ -212,7 +214,8 @@
 				6D68E1B1287ABDB900CD574A /* NSScreen+Extensions.swift */,
 				978ED4B4980A643D77EBB8E9 /* DisplaySession.swift */,
 				D15C0FE00300000000000002 /* DisplayPreviewRecovery.swift */,
-				D15C0FE00400000000000002 /* ApplicationInstancePolicy.swift */,
+				D15C0FE00400000000000002 /* ApplicationInstanceLock.swift */,
+				D15C0FE00500000000000002 /* PreferencesStorage.swift */,
 				9950A62308D591A10DE9AACF /* DisplaySessionConfiguration.swift */,
 				67EB6059C1E86E6E16D46B72 /* WindowResizeGeometry.swift */,
 				3C19F88D682B5A21DA78F1BD /* DisplaySerialAllocator.swift */,
@@ -311,7 +314,8 @@
 				0FBE0671534C58D0A3AD7AA5 /* ScreenConfigurationResolver.swift in Sources */,
 				3EBC81AF7984BC8FA486291F /* DisplaySession.swift in Sources */,
 				D15C0FE00300000000000001 /* DisplayPreviewRecovery.swift in Sources */,
-				D15C0FE00400000000000001 /* ApplicationInstancePolicy.swift in Sources */,
+				D15C0FE00400000000000001 /* ApplicationInstanceLock.swift in Sources */,
+				D15C0FE00500000000000001 /* PreferencesStorage.swift in Sources */,
 				EEC87280DBC0639A125EB723 /* DisplaySessionConfiguration.swift in Sources */,
 				F81EC1037B302AB8DF30897B /* WindowResizeGeometry.swift in Sources */,
 				93906570F45871A54E3F6795 /* DisplaySerialAllocator.swift in Sources */,

@@ -8,8 +8,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         updaterDelegate: nil,
         userDriverDelegate: nil
     )
-    private let generalPreferences = GeneralPreferences.shared
-    private let recordingPreferences = RecordingPreferences.shared
+    private var instanceLock: ApplicationInstanceLock?
+    private lazy var generalPreferences: GeneralPreferences = {
+        #if DEBUG
+            if DebugIntegrationEnvironment.isRequested {
+                return GeneralPreferences(persistsChanges: false)
+            }
+        #endif
+        return .shared
+    }()
+
+    private lazy var recordingPreferences: RecordingPreferences = {
+        #if DEBUG
+            if DebugIntegrationEnvironment.isRequested {
+                return RecordingPreferences(persistsChanges: false)
+            }
+        #endif
+        return .shared
+    }()
+
     private lazy var displayCoordinator = DisplayWindowCoordinator(
         generalPreferences: generalPreferences
     )
@@ -21,9 +38,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var isTerminating = false
 
     func applicationDidFinishLaunching(_: Notification) {
-        if terminateIfDuplicateInstance() {
+        guard claimPrimaryInstance() else {
             return
         }
+        #if DEBUG
+            if DebugIntegrationEnvironment.isRequested {
+                do {
+                    try DebugIntegrationEnvironment.prepare()
+                } catch {
+                    DebugIntegrationEnvironment.finish(error: error)
+                }
+            }
+        #endif
 
         configureCoordinators()
         menuController.install()
@@ -32,11 +58,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.terminate(nil)
             return
         }
+        presentPreferencesIssueIfNeeded()
 
         Task {
             do {
                 try await ScreenCaptureAuthorization.verify()
             } catch {
+                #if DEBUG
+                    if DebugIntegrationEnvironment.isRequested {
+                        await displayCoordinator.stopAll()
+                        DebugIntegrationEnvironment.finish(error: error)
+                    }
+                #endif
                 if error is ScreenCaptureAuthorizationError {
                     presentScreenCaptureRestartAlert(error: error)
                 } else {
@@ -53,21 +86,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             firstDisplay: displayWindow,
                             coordinator: displayCoordinator
                         )
-                    } else if
-                        ProcessInfo.processInfo.environment[
-                            "DISPLAYCOVE_PREVIEW_STOP_TEST"
-                        ] == "1"
-                    {
-                        Task {
-                            try? await Task.sleep(for: .seconds(1))
-                            await displayWindow.viewController
-                                .simulateUserStoppedPreview()
-                        }
                     } else {
                         DebugRecordingHarness.startIfRequested(
-                            for: displayWindow
+                            for: displayWindow, coordinator: displayCoordinator
                         )
                     }
+                } else if DebugIntegrationEnvironment.isRequested {
+                    await displayCoordinator.stopAll()
+                    DebugIntegrationEnvironment.finish(error: DebugIntegrationEnvironment.failure ??
+                        NSError(domain: "DisplayCoveIntegration", code: 1, userInfo: [
+                            NSLocalizedDescriptionKey: "The first virtual display could not be created.",
+                        ]))
                 }
             #endif
         }
@@ -82,6 +111,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminate(
         _ sender: NSApplication
     ) -> NSApplication.TerminateReply {
+        guard instanceLock != nil else {
+            return .terminateNow
+        }
         guard !isTerminating else {
             return .terminateLater
         }
@@ -99,6 +131,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.menuController.update()
         }
         displayCoordinator.onError = { [weak self] error, window in
+            #if DEBUG
+                if DebugIntegrationEnvironment.isRequested {
+                    DebugIntegrationEnvironment.recordFailure(error)
+                    return
+                }
+            #endif
             self?.presentError(error, for: window)
         }
         displayCoordinator.onRecordingFinished = { [weak self] _ in
@@ -106,6 +144,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         recordingCoordinator.onError = { [weak self] error, window in
+            #if DEBUG
+                if DebugIntegrationEnvironment.isRequested {
+                    DebugIntegrationEnvironment.recordFailure(error)
+                    return
+                }
+            #endif
             self?.presentError(error, for: window)
         }
         recordingCoordinator.onStateChanged = { [weak self] in
@@ -117,11 +161,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         menuController.onNewScreen = { [weak self] in
             Task {
-                let displayWindow = await self?.displayCoordinator.createScreen()
+                guard let self else { return }
+                let displayWindow = await self.displayCoordinator.createScreen()
                 #if DEBUG
                     if let displayWindow {
                         DebugRecordingHarness.startIfRequested(
-                            for: displayWindow
+                            for: displayWindow, coordinator: self.displayCoordinator
                         )
                     }
                 #endif
@@ -162,32 +207,44 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func terminateIfDuplicateInstance() -> Bool {
-        guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
-            return false
+    private func claimPrimaryInstance() -> Bool {
+        do {
+            if let lock = try ApplicationInstanceLock.claimApplication() {
+                instanceLock = lock
+                return true
+            }
+            AppLog.lifecycle.notice("Another DisplayCove instance owns the application lock")
+            if let identifier = Bundle.main.bundleIdentifier {
+                NSRunningApplication.runningApplications(withBundleIdentifier: identifier)
+                    .first { $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }?
+                    .activate(options: [.activateAllWindows])
+            }
+        } catch {
+            AppLog.lifecycle.error("Instance ownership failed: \(error.localizedDescription, privacy: .public)")
+            let alert = NSAlert()
+            alert.messageText = "DisplayCove could not start"
+            alert.informativeText = error.localizedDescription
+            alert.addButton(withTitle: "Quit")
+            alert.runModal()
         }
-
-        let currentProcessID = ProcessInfo.processInfo.processIdentifier
-        let matchingApplications =
-            NSRunningApplication.runningApplications(
-                withBundleIdentifier: bundleIdentifier
-            )
-        let matchingProcessIDs = matchingApplications.map(
-            \.processIdentifier
-        )
-        guard ApplicationInstancePolicy.shouldTerminate(
-            currentProcessID: currentProcessID,
-            matchingProcessIDs: matchingProcessIDs
-        ) else {
-            return false
-        }
-
-        matchingApplications
-            .filter { $0.processIdentifier != currentProcessID }
-            .min { $0.processIdentifier < $1.processIdentifier }?
-            .activate(options: [.activateAllWindows])
         NSApp.terminate(nil)
-        return true
+        return false
+    }
+
+    private func presentPreferencesIssueIfNeeded() {
+        guard generalPreferences.persistenceError != nil || recordingPreferences.persistenceError != nil else {
+            return
+        }
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Some saved settings could not be loaded"
+        alert.informativeText = "The original data is preserved. Default settings will be used for this session. " +
+            "Open Settings to review the error and explicitly reset saved settings."
+        alert.addButton(withTitle: "Open Settings")
+        alert.addButton(withTitle: "Continue")
+        if alert.runModal() == .alertFirstButtonReturn {
+            showSettings()
+        }
     }
 
     private func showSettings() {
@@ -205,10 +262,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func presentFirstLaunchOnboardingIfNeeded() -> Bool {
-        let environment = ProcessInfo.processInfo.environment
-        let isAutomatedLaunch =
-            environment["DISPLAYCOVE_LIFECYCLE_TEST"] == "1" ||
-            environment["DISPLAYCOVE_RECORDING_TEST_OUTPUT"] != nil
+        #if DEBUG
+            let isAutomatedLaunch = DebugIntegrationEnvironment.isRequested
+        #else
+            let isAutomatedLaunch = false
+        #endif
         let key = "hasCompletedFirstLaunchOnboarding"
         guard
             !isAutomatedLaunch,

@@ -85,4 +85,38 @@ struct RecordingSettings: Codable, Equatable, Sendable {
     var capturesSystemAudio = false
     var capturesMicrophone = false
     var microphoneDeviceID: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case codec, frameRate, quality, showsCursor, showsMouseClicks
+        case capturesSystemAudio, capturesMicrophone, microphoneDeviceID
+    }
+}
+
+extension RecordingSettings {
+    init(from decoder: any Decoder) throws {
+        self.init()
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        if values.contains(.codec) {
+            codec = try values.decode(RecordingCodec.self, forKey: .codec)
+        }
+        if values.contains(.frameRate) {
+            frameRate = try values.decode(RecordingFrameRate.self, forKey: .frameRate)
+        }
+        if values.contains(.quality) {
+            quality = try values.decode(RecordingQuality.self, forKey: .quality)
+        }
+        if values.contains(.showsCursor) {
+            showsCursor = try values.decode(Bool.self, forKey: .showsCursor)
+        }
+        if values.contains(.showsMouseClicks) {
+            showsMouseClicks = try values.decode(Bool.self, forKey: .showsMouseClicks)
+        }
+        if values.contains(.capturesSystemAudio) {
+            capturesSystemAudio = try values.decode(Bool.self, forKey: .capturesSystemAudio)
+        }
+        if values.contains(.capturesMicrophone) {
+            capturesMicrophone = try values.decode(Bool.self, forKey: .capturesMicrophone)
+        }
+        microphoneDeviceID = try values.decodeIfPresent(String.self, forKey: .microphoneDeviceID)
+    }
 }

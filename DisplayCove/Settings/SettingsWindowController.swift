@@ -19,7 +19,9 @@ final class SettingsWindowController: NSWindowController {
             generalViewController: generalViewController,
             recordingViewController: recordingViewController
         )
-        let contentSize = NSSize(width: 560, height: 390)
+        let hasSettingsIssue = generalPreferences.persistenceError != nil ||
+            recordingPreferences.persistenceError != nil
+        let contentSize = NSSize(width: 560, height: hasSettingsIssue ? 510 : 390)
         contentViewController.preferredContentSize = contentSize
 
         let window = NSWindow(
@@ -46,6 +48,48 @@ final class SettingsWindowController: NSWindowController {
         showWindow(nil)
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+}
+
+final class PreferencesRecoveryView: NSStackView {
+    private let message = NSTextField(wrappingLabelWithString: "")
+    private var onReset: (() -> Void)?
+
+    init(onReset: @escaping () -> Void) {
+        self.onReset = onReset
+        super.init(frame: .zero)
+        orientation = .vertical
+        alignment = .leading
+        spacing = 8
+        message.textColor = .systemOrange
+        message.font = .systemFont(ofSize: 12)
+        message.preferredMaxLayoutWidth = 480
+        let reset = NSButton(title: "Reset saved settings...", target: self, action: #selector(resetPressed))
+        addArrangedSubview(message)
+        addArrangedSubview(reset)
+        isHidden = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func update(_ issue: String?) {
+        message.stringValue = issue ?? ""
+        isHidden = issue == nil
+    }
+
+    @objc private func resetPressed() {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Reset these saved settings?"
+        alert.informativeText = "This replaces the preserved settings for this tab with defaults. It cannot be undone."
+        alert.addButton(withTitle: "Reset")
+        alert.addButton(withTitle: "Cancel")
+        if alert.runModal() == .alertFirstButtonReturn {
+            onReset?()
+        }
     }
 }
 

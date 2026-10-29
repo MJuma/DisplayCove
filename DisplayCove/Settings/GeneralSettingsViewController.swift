@@ -4,6 +4,13 @@ final class GeneralSettingsViewController: NSViewController {
     var onSettingsChanged: ((GeneralSettings) -> Void)?
 
     private let preferences: GeneralPreferences
+    private lazy var recoveryView = PreferencesRecoveryView { [weak self] in
+        guard let self else { return }
+        preferences.resetSavedSettings()
+        loadSettings()
+        onSettingsChanged?(preferences.settings)
+    }
+
     private let resolutionPopup = NSPopUpButton()
     private let bringToFrontCheckbox = NSButton(
         checkboxWithTitle: "Bring the DisplayCove window forward when the pointer enters",
@@ -84,6 +91,7 @@ final class GeneralSettingsViewController: NSViewController {
         optionsStack.spacing = 10
 
         let contentStack = NSStackView(views: [
+            recoveryView,
             resolutionRow,
             optionsStack,
         ])
@@ -108,6 +116,7 @@ final class GeneralSettingsViewController: NSViewController {
     }
 
     private func loadSettings() {
+        recoveryView.update(preferences.persistenceError)
         let settings = preferences.settings
         resolutionPopup.selectItem(
             at: resolutionPopup.itemArray.firstIndex(where: {
@@ -135,6 +144,7 @@ final class GeneralSettingsViewController: NSViewController {
             preservesPhysicalHDR: preserveHDRCheckbox.state == .on
         )
         preferences.settings = settings
+        recoveryView.update(preferences.persistenceError)
         onSettingsChanged?(settings)
     }
 }

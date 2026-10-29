@@ -1,7 +1,10 @@
+import Foundation
 import OSLog
 
 enum AppLog {
-    private static let subsystem = "dev.juma.DisplayCove"
+    private static let subsystem = Bundle.main.bundleIdentifier ?? "dev.juma.DisplayCove"
+
+    static let lifecycle = Logger(subsystem: subsystem, category: "lifecycle")
 
     static let display = Logger(
         subsystem: subsystem,

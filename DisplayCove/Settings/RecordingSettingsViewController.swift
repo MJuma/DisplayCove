@@ -3,6 +3,11 @@ import Cocoa
 
 final class RecordingSettingsViewController: NSViewController {
     private let preferences: RecordingPreferences
+    private lazy var recoveryView = PreferencesRecoveryView { [weak self] in
+        guard let self else { return }
+        preferences.resetSavedSettings()
+        loadSettings()
+    }
 
     private let codecPopup = NSPopUpButton()
     private let frameRatePopup = NSPopUpButton()
@@ -105,6 +110,7 @@ final class RecordingSettingsViewController: NSViewController {
         audioOptions.spacing = 8
 
         let contentStack = NSStackView(views: [
+            recoveryView,
             makeLabeledRow(title: "Codec:", control: codecPopup),
             makeLabeledRow(title: "Frame rate:", control: frameRatePopup),
             makeLabeledRow(title: "Quality:", control: qualityPopup),
@@ -156,6 +162,7 @@ final class RecordingSettingsViewController: NSViewController {
     }
 
     private func loadSettings() {
+        recoveryView.update(preferences.persistenceError)
         let settings = preferences.settings
 
         selectItem(in: codecPopup, representedObject: settings.codec.rawValue)
@@ -206,5 +213,6 @@ final class RecordingSettingsViewController: NSViewController {
                 : nil
         )
         microphonePopup.isEnabled = microphoneCheckbox.state == .on
+        recoveryView.update(preferences.persistenceError)
     }
 }

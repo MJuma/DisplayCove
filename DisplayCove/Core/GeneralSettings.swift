@@ -15,6 +15,35 @@ struct GeneralSettings: Codable, Equatable, Sendable {
     var bringsWindowToFront = true
     var showsPreviewCursor = true
     var preservesPhysicalHDR = true
+
+    private enum CodingKeys: String, CodingKey {
+        case defaultResolution, bringsWindowToFront, showsPreviewCursor, preservesPhysicalHDR
+    }
+}
+
+extension GeneralSettings {
+    init(from decoder: any Decoder) throws {
+        self.init()
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        if values.contains(.defaultResolution) {
+            defaultResolution = try values.decode(DisplayResolution.self, forKey: .defaultResolution)
+            guard defaultResolution.width > 0, defaultResolution.height > 0 else {
+                throw DecodingError.dataCorruptedError(
+                    forKey: .defaultResolution, in: values,
+                    debugDescription: "The saved resolution must have positive dimensions."
+                )
+            }
+        }
+        if values.contains(.bringsWindowToFront) {
+            bringsWindowToFront = try values.decode(Bool.self, forKey: .bringsWindowToFront)
+        }
+        if values.contains(.showsPreviewCursor) {
+            showsPreviewCursor = try values.decode(Bool.self, forKey: .showsPreviewCursor)
+        }
+        if values.contains(.preservesPhysicalHDR) {
+            preservesPhysicalHDR = try values.decode(Bool.self, forKey: .preservesPhysicalHDR)
+        }
+    }
 }
 
 @MainActor
@@ -22,39 +51,30 @@ struct GeneralSettings: Codable, Equatable, Sendable {
 final class GeneralPreferences {
     static let shared = GeneralPreferences()
 
-    private let defaults: UserDefaults
-    private let key: String
+    private let storage: PreferencesStorage<GeneralSettings>
+    private(set) var persistenceError: String?
 
     var settings: GeneralSettings {
         didSet {
-            persist()
+            persistenceError = storage.save(settings)
         }
     }
 
     init(
         defaults: UserDefaults = .standard,
-        key: String = "generalSettings"
+        key: String = "generalSettings",
+        persistsChanges: Bool = true
     ) {
-        self.defaults = defaults
-        self.key = key
-
-        if
-            let data = defaults.data(forKey: key),
-            let settings = try? JSONDecoder().decode(GeneralSettings.self, from: data)
-        {
-            self.settings = settings
-        } else {
-            settings = GeneralSettings()
-        }
+        storage = PreferencesStorage(
+            defaults: defaults, key: key, initialValue: GeneralSettings(),
+            persistsChanges: persistsChanges
+        )
+        settings = storage.load()
+        persistenceError = storage.issue
     }
 
-    private func persist() {
-        do {
-            try defaults.set(JSONEncoder().encode(settings), forKey: key)
-        } catch {
-            AppLog.preferences.error(
-                "Could not save general settings: \(error.localizedDescription, privacy: .public)"
-            )
-        }
+    func resetSavedSettings() {
+        storage.reset()
+        settings = GeneralSettings()
     }
 }

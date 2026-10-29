@@ -6,39 +6,30 @@ import Observation
 final class RecordingPreferences {
     static let shared = RecordingPreferences()
 
-    private let defaults: UserDefaults
-    private let key: String
+    private let storage: PreferencesStorage<RecordingSettings>
+    private(set) var persistenceError: String?
 
     var settings: RecordingSettings {
         didSet {
-            persist()
+            persistenceError = storage.save(settings)
         }
     }
 
     init(
         defaults: UserDefaults = .standard,
-        key: String = "recordingSettings"
+        key: String = "recordingSettings",
+        persistsChanges: Bool = true
     ) {
-        self.defaults = defaults
-        self.key = key
-
-        if
-            let data = defaults.data(forKey: key),
-            let settings = try? JSONDecoder().decode(RecordingSettings.self, from: data)
-        {
-            self.settings = settings
-        } else {
-            settings = RecordingSettings()
-        }
+        storage = PreferencesStorage(
+            defaults: defaults, key: key, initialValue: RecordingSettings(),
+            persistsChanges: persistsChanges
+        )
+        settings = storage.load()
+        persistenceError = storage.issue
     }
 
-    private func persist() {
-        do {
-            try defaults.set(JSONEncoder().encode(settings), forKey: key)
-        } catch {
-            AppLog.preferences.error(
-                "Could not save recording settings: \(error.localizedDescription, privacy: .public)"
-            )
-        }
+    func resetSavedSettings() {
+        storage.reset()
+        settings = RecordingSettings()
     }
 }
