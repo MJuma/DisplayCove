@@ -181,19 +181,33 @@ Requirements for changes in this area:
 
 ## Asset generation
 
+The README hero, `Marketing/Screenshots/DisplayCove-Preview.gif`, is an
+app-rendered illustration with fictional presentation and agenda windows.
+Unmodified `ScreenViewController` and `ApplicationMenuController` code was
+rendered against in-memory display/recording providers in an isolated target.
+Only app-owned views were rasterized and composited onto original artwork.
+No virtual displays were created, desktop/audio captured, permissions changed,
+or production preferences accessed. This is not a live-display integration test.
+
+Capture-only providers and rendering code are not part of the application or
+shipping source. When replacing the animation, inspect every frame for private
+content, clipping and readability; strip private metadata, keep the GIF below
+one MiB, and verify its loop returns to the original resolution and layout.
+
 Regenerate the icon and social preview with:
 
 ```bash
 swift Scripts/generate-brand-assets.swift
 ```
 
-Capture a specific application window using ScreenCaptureKit:
+For a separate diagnostic still image, capture a specific application window
+using ScreenCaptureKit:
 
 ```bash
 swift Scripts/capture-app-window.swift \
   DisplayCove \
   DisplayCove \
-  Marketing/Screenshots/DisplayCove-Primary.png
+  Marketing/Captures/DisplayCove-Window.png
 ```
 
 After capturing both virtual display windows, regenerate the multi-display composition with:

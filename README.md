@@ -22,7 +22,7 @@ DisplayCove gives Zoom, Teams, Meet, recording software, and similar apps a stan
 Mac.
 
 <p align="center">
-  <img src="Marketing/Screenshots/DisplayCove-Primary.png" alt="DisplayCove showing a dedicated virtual desktop">
+  <img src="Marketing/Screenshots/DisplayCove-Preview.gif" alt="Animated DisplayCove preview with fictional presentation and agenda windows, the native Resolution menu, and a change from 1920 × 1080 to 1280 × 720" width="960">
 </p>
 
 ## Features
