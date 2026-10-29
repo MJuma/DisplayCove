@@ -30,13 +30,16 @@ coordinators.
 Run the focused validation commands from the repository root:
 
 ```bash
-swift test
+swift test -Xswiftc -warnings-as-errors -Xcc -Werror
+bash Scripts/test-tooling.sh
 
 xcodebuild -quiet \
   -project DisplayCove.xcodeproj \
   -scheme DisplayCove \
   -configuration Debug \
   CODE_SIGNING_ALLOWED=NO \
+  SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
+  GCC_TREAT_WARNINGS_AS_ERRORS=YES \
   build
 
 swift run --package-path BuildTools \
@@ -61,6 +64,66 @@ Scripts/run-recording-integration.sh
 ```
 
 These scripts modify the live display environment and require the relevant Screen & System Audio Recording permissions.
+They build separate `dev.juma.DisplayCove.lifecycle-integration` and
+`dev.juma.DisplayCove.recording-integration` apps rather than reusing the production
+identity. Grant permission to these test copies separately. Production grants,
+saved settings and the running production app are not reset or replaced.
+
+Integration preferences are session-only. Recordings use a private UUID-named
+temporary folder, removed after success or failure. Set
+`DISPLAYCOVE_RECORDING_TEST_KEEP_OUTPUT=1` only when intentionally retaining a
+test recording; its path is printed. The external runner requires both a zero
+exit status and the exact success marker, enforces a 90-second application
+deadline, and stops only the child it launched. Override
+`DISPLAYCOVE_INTEGRATION_TIMEOUT` with an integer from 1 through 600 if needed.
+Launch through these scripts, not by setting test flags on the production app.
+
+`Scripts/test-tooling.sh` checks tag/path guards, artifact preservation, and
+supervisor success/failure/timeout handling using temporary Git repositories and
+a tiny fake executable. It does not create virtual displays or capture audio.
+
+## Ownership and saved settings
+
+A per-bundle kernel `flock` is acquired before preferences or capture coordinators
+are constructed and retained for the application's lifetime. Duplicate launches
+activate an existing copy and exit; PID order is not ownership evidence. Never
+delete live lock files. Lock files are empty and live in the app's Application
+Support directory.
+
+Older preferences default only fields that are missing. Invalid values,
+unsupported enum cases and corrupt data produce a startup warning and a banner
+in the affected Settings tab. The original data remains untouched while edits
+apply to the current session. Explicitly confirm **Reset saved settings** to
+replace that tab's saved data with defaults.
+
+## Release preparation
+
+The manual release workflow checks out the exact existing version tag, runs
+strict tests and lint, builds with the existing signing identity, generates the
+signed Sparkle appcast, and creates or updates a **draft only**. It refuses to
+replace a published release. Review and publish the draft explicitly; publishing
+is what exposes its appcast to the existing latest-release feed.
+
+Normal local packaging requires a clean checkout at the matching version tag:
+
+```bash
+DISPLAYCOVE_RELEASE_TAG=v1.0.4 bash Scripts/build-unsigned-release.sh
+```
+
+For packaging uncommitted development work only:
+
+```bash
+DISPLAYCOVE_RELEASE_TAG=v1.0.4 DISPLAYCOVE_ALLOW_DIRTY_RELEASE=1 \
+  bash Scripts/build-unsigned-release.sh
+```
+
+Developer output has a `-dev` suffix and is not a release candidate. Both modes
+use fresh private build/staging folders, verify ZIP/DMG/signatures/checksums,
+and refuse to overwrite existing output. Normal packaging rechecks the tag,
+HEAD and clean source state before publishing the local artifact directory.
+Neither command changes an installed app, imports signing identities, modifies
+keychain trust, creates tags or uploads files. Signing identity/keychain options
+remain the same as before.
 
 ## Stable local review signing
 

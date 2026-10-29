@@ -4,21 +4,50 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Release tag matching the app marketing version
+        description: Existing version tag matching the app marketing version
         required: true
-        default: v1.0.3
+        default: v1.0.4
 
 permissions:
   contents: write
 
+concurrency:
+  group: draft-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
 jobs:
   release:
-    name: Build unsigned release
+    name: Prepare signed draft release
     runs-on: xcode-27
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reject already published releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            if [[ "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)" != true ]]; then
+              echo "Refusing to overwrite an already published release." >&2
+              exit 1
+            fi
+          fi
+
+      - name: Strict unit and tooling tests
+        run: |
+          swift test -Xswiftc -warnings-as-errors -Xcc -Werror
+          bash Scripts/test-tooling.sh
+
+      - name: Format checks
+        run: swift run --package-path BuildTools swiftformat --lint . --swiftversion 6
 
       - name: Import self-signed identity
         env:
@@ -31,6 +60,7 @@ jobs:
           keychain_path="$RUNNER_TEMP/DisplayCovePreview.keychain-db"
           keychain_password="$(openssl rand -hex 24)"
 
+          umask 077
           printf '%s' "$CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
           security create-keychain -p "$keychain_password" "$keychain_path"
           security set-keychain-settings -lut 21600 "$keychain_path"
@@ -44,9 +74,11 @@ jobs:
           echo "DISPLAYCOVE_SIGNING_KEYCHAIN=$keychain_path" >> "$GITHUB_ENV"
 
       - name: Build signed artifacts
+        id: build
         env:
           DISPLAYCOVE_SIGNING_IDENTITY: DisplayCove Preview Signing
           DISPLAYCOVE_RELEASE_TAG: ${{ inputs.tag }}
+          DISPLAYCOVE_KEEP_RELEASE_WORKSPACE: 1
           TMPDIR: ${{ runner.temp }}
         run: Scripts/build-unsigned-release.sh
 
@@ -55,10 +87,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
           RELEASE_TAG: ${{ inputs.tag }}
+          APP_PATH: ${{ steps.build.outputs.app_path }}
+          RELEASE_WORKSPACE: ${{ steps.build.outputs.workspace }}
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
-          app_info="$RUNNER_TEMP/DisplayCove-Unsigned-Release-DerivedData/Build/Products/Release/DisplayCove.app/Contents/Info.plist"
+          app_info="$APP_PATH/Contents/Info.plist"
           app_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_info")"
           if [[ "$version" != "$app_version" ]]; then
             echo "Tag $RELEASE_TAG does not match app version $app_version" >&2
@@ -68,12 +102,14 @@ jobs:
           dist="$GITHUB_WORKSPACE/dist/$RELEASE_TAG"
           work="$RUNNER_TEMP/appcast"
           key_file="$RUNNER_TEMP/sparkle-private-key"
+          umask 077
           mkdir -p "$work"
           cp "$dist"/*.zip "$work/"
           printf '%s' "$SPARKLE_PRIVATE_KEY" > "$key_file"
           chmod 600 "$key_file"
 
-          generate_appcast="$(find "$RUNNER_TEMP" -path '*/Sparkle/bin/generate_appcast' -type f -print -quit)"
+          generate_appcast="$(find "$RELEASE_WORKSPACE/DerivedData" -path '*/Sparkle/bin/generate_appcast' -type f -print -quit)"
+          test -x "$generate_appcast"
           "$generate_appcast" \
             --ed-key-file "$key_file" \
             --download-url-prefix "https://github.com/MJuma/DisplayCove/releases/download/$RELEASE_TAG/" \
@@ -99,7 +135,7 @@ jobs:
           codesign --verify --deep --strict "$verify/DisplayCove.app"
           xmllint --noout "$dist/appcast.xml"
 
-      - name: Publish latest release
+      - name: Create or update draft only
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag }}
@@ -128,6 +164,10 @@ jobs:
           EOF
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            if [[ "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)" != true ]]; then
+              echo "Refusing to overwrite an already published release." >&2
+              exit 1
+            fi
             gh release upload "$RELEASE_TAG" \
               "$dist"/*.dmg \
               "$dist"/*.zip \
@@ -137,7 +177,7 @@ jobs:
             gh release edit "$RELEASE_TAG" \
               --title "DisplayCove $version" \
               --notes-file "$notes" \
-              --latest
+              --draft
           else
             gh release create "$RELEASE_TAG" \
               "$dist"/*.dmg \
@@ -146,5 +186,21 @@ jobs:
               "$dist/appcast.xml" \
               --title "DisplayCove $version" \
               --notes-file "$notes" \
-              --latest
+              --draft --verify-tag
           fi
+
+      - name: Clean temporary release material
+        if: always()
+        env:
+          RELEASE_WORKSPACE: ${{ steps.build.outputs.workspace }}
+        run: |
+          set -euo pipefail
+          cleanup_status=0
+          if [[ -n "$RELEASE_WORKSPACE" ]]; then
+            swift Scripts/release-files.swift cleanup-workspace "$RELEASE_WORKSPACE" || cleanup_status=1
+          fi
+          if [[ -f "$RUNNER_TEMP/DisplayCovePreview.keychain-db" ]]; then
+            security delete-keychain "$RUNNER_TEMP/DisplayCovePreview.keychain-db" || cleanup_status=1
+          fi
+          rm -f "$RUNNER_TEMP/sparkle-private-key" "$RUNNER_TEMP/DisplayCovePreview.p12" "$RUNNER_TEMP/DisplayCovePreview.pem" || cleanup_status=1
+          exit "$cleanup_status"

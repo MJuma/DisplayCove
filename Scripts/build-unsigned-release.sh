@@ -10,7 +10,7 @@ KEEP_WORKSPACE="${DISPLAYCOVE_KEEP_RELEASE_WORKSPACE:-0}"
 
 cd "$ROOT"
 if [[ ! "$TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
-  echo "Set DISPLAYCOVE_RELEASE_TAG to a version tag, such as v1.0.3." >&2
+  echo "Set DISPLAYCOVE_RELEASE_TAG to a version tag, such as v1.0.4." >&2
   exit 1
 fi
 case "$DEVELOPER_BUILD" in 0|1) ;; *) echo "Invalid DISPLAYCOVE_ALLOW_DIRTY_RELEASE" >&2; exit 1 ;; esac

@@ -23,13 +23,16 @@ DisplayCove welcomes focused bug fixes, compatibility improvements, tests, and f
 Before submitting:
 
 ```bash
-swift test
+swift test -Xswiftc -warnings-as-errors -Xcc -Werror
+bash Scripts/test-tooling.sh
 
 xcodebuild -quiet \
   -project DisplayCove.xcodeproj \
   -scheme DisplayCove \
   -configuration Debug \
   CODE_SIGNING_ALLOWED=NO \
+  SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
+  GCC_TREAT_WARNINGS_AS_ERRORS=YES \
   build
 
 swift run --package-path BuildTools \
@@ -38,6 +41,9 @@ swift run --package-path BuildTools \
 ```
 
 Run the integration scripts when changing display creation, resolution switching, teardown, ScreenCaptureKit preview, or recording.
+These are explicit live-display tests with separate bundle identities. Pure
+tooling tests do not require capture permission. Do not run live integrations on
+a shared machine without approval.
 
 ## Pull requests
 

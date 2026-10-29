@@ -25,6 +25,14 @@ DisplayCove writes a recording only after the user selects a destination in the 
 
 General and Recording preferences are stored locally in the standard macOS preferences domain for `dev.juma.DisplayCove`. DisplayCove does not upload these
 settings. Removing the app may leave its local preferences and macOS permission records until the user removes them.
+Unreadable saved data is preserved until an explicit reset in Settings; edits
+made before that reset apply only to the current session. Empty kernel instance
+lock files in Application Support prevent duplicate copies without storing
+process IDs or adding a polling timer.
+
+Developer integration scripts use separate app identities and session-only
+preferences. Their temporary recordings are deleted unless explicitly retained;
+these scripts are opt-in and can capture real screen/audio content.
 
 ## Updates
 
